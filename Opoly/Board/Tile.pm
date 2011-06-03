@@ -26,8 +26,38 @@ class Opoly::Board::Tile::Property
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
-  has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+  #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
   
+}
+
+class Opoly::Board::Tile::Card
+  extends Opoly::Board::Tile {
+  
+  has 'deck' => (isa => 'Str', is => 'ro', builder => '_set_deck', lazy => 1);
+
+  method _set_deck {
+    return $self->name;
+  }
+
+}
+
+class Opoly::Board::Tile::Railroad
+  with Opoly::Board::Role::Ownable
+  extends Opoly::Board::Tile {
+
+}
+
+class Opoly::Board::Tile::Utility
+  with Opoly::Board::Role::Ownable
+  extends Opoly::Board::Tile {
+
+}
+
+class Opoly::Board::Tile::Tax 
+  extends Opoly::Board::Tile {
+
+
+
 }
 
 role Opoly::Board::Role::Ownable {

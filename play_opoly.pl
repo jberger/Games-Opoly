@@ -10,7 +10,9 @@ use Opoly::Board;
 use Opoly::Board::Group;
 use Opoly::Board::Tile;
 
-my $board = do 'standard_board.conf';
+my $board_file = 'standard_board.conf';
+
+my $board = do $board_file or die "Couldn't load board: $@, ";
 
 my $groups = $board->groups;
 foreach my $group (@$groups) {
