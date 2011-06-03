@@ -12,3 +12,11 @@ class Opoly::Board::Group {
   }
 
 }
+
+#class Opoly::Board::Group::Property
+#extends Opoly::Board::Group {
+#
+#  has 'monopoly' => (isa => 'Bool', is => 'rw', default => 0);
+#
+#}
+

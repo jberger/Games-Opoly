@@ -5,22 +5,17 @@ use warnings;
 
 use 5.10.0;
 
-use Opoly;
+#use Opoly;
 use Opoly::Board;
 use Opoly::Board::Group;
 use Opoly::Board::Tile;
 
-my %groups = map { $_ => Opoly::Board::Group->new(name => $_) } qw(Corners);
-my %tiles = (
-  start => Opoly::Board::Tile->new(
-    name => 'Start',
-    address => 0,
-    group => $groups{Corners},
-  )
-);
+my $board = do 'standard_board.conf';
 
-foreach my $group (keys %groups) {
-  foreach my $tile (@{ $groups{$group}->tiles }) {
-    say $tile->name;
+my $groups = $board->groups;
+foreach my $group (@$groups) {
+  say $group->name, ":";
+  foreach my $tile (@{ $group->tiles }) {
+    say "\t", $tile->name;
   }
 }

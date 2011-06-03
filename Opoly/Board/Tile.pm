@@ -13,27 +13,31 @@ class Opoly::Board::Tile {
 
   sub BUILD {
     my $self = shift;
-    $self->group->add($self);
+    $self->group->add_tile($self);
   }
 
 }
 
-role Ownable {
+class Opoly::Board::Tile::Property 
+  extends Opoly::Board::Tile
+  with Opoly::Board::Role::Ownable {
 
-  has 'price' => (isa => 'Num', is => 'ro', required => 1);
-  has 'owner' => (isa => 'Opoly::Player', is => 'rw', lazy => 1);
-
-}
-
-role Property with Ownable {
-
-  has 'rent' => (isa => 'Num', is => 'ro', required => 1);
+  has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
+  has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+  
 }
 
-role Value {
+role Opoly::Board::Role::Ownable {
+
+  has 'price' => (isa => 'Num', is => 'ro', required => 1);
+  has 'owner' => (isa => 'Opoly::Player', is => 'rw', default => undef);
+
+}
+
+role Opoly::Board::Role::Value {
 
   #has 'type' => ( isa => 'Str', is => 'ro', required => 1);
   has 'value' => ( isa => 'Num', is => 'ro', required => 1);
