@@ -1,20 +1,11 @@
 use MooseX::Declare;
 
-class 'Opoly::Board' {
+class Opoly::Board {
 
   use Opoly::Board::Group;
   use Opoly::Board::Tile;
 
-  has Groups => (isa => 'ArrayRef[Opoly::Board::Group]', is => 'ro', builder => '_build_board');
-  has Start => (isa => 'Opoly::Board::Tile', is => 'ro', writer => '_set_start');
-
-  method _build_board () {
-
-
-  }
-  
-  method _set_start ('Opoly::Board::Tile' $tile) {
-    return $tile;
-  }
+  has 'groups' => (isa => 'ArrayRef[Opoly::Board::Group]', is => 'ro', required => 1);
+  has 'start' => (isa => 'Opoly::Board::Tile', is => 'ro', required => 1);
 
 }
