@@ -4,15 +4,24 @@ class Opoly::Board {
 
   use Opoly::Board::Group;
   use Opoly::Board::Tile;
+  use Opoly::Board::Dice;
 
   has 'groups' => (isa => 'ArrayRef[Opoly::Board::Group]', is => 'ro', required => 1);
   has 'tiles' => (isa => 'ArrayRef', is => 'ro', required => 1);
   has 'start' => (isa => 'Opoly::Board::Tile', is => 'ro', required => 1);
+  has 'dice' => (isa => 'Opoly::Board::Dice', is => 'ro', builder => '_make_dice');
 
-  sub BUILD {
+  method _make_dice () {
+    Opoly::Board::Dice->new();
+  }
+
+  method get_tile (Num $address) {
+    return $self->tiles->[$address]
+  }
+
+  method BUILD ($) {
     # Test for a valid board
 
-    my $self = shift;
     my $tiles = $self->tiles;
 
     my $i = 0; # expected address
