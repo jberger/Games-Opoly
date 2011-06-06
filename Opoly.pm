@@ -50,6 +50,7 @@ class Opoly {
         #TODO handle 3 doubles
         $player->num_roll(0);
         $roll_total = 0;
+        $player->remove_choice("Roll");
       }
     } else {
       $player->num_roll(0)

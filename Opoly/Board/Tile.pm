@@ -51,7 +51,7 @@ class Opoly::Board::Tile::Ownable
 
   augment arrive (Opoly::Player $player) {
     unless ($self->has_owner) {
-      $player->choices({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
+      $player->add_choice({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
     }
     inner($player);
   }

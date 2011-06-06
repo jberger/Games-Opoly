@@ -17,6 +17,11 @@ class Opoly::Player {
     $message .= "-- Properties: \t" . join("\n\t\t", map { $_->name } @{$self->properties}) . "\n";
   }
 
+  method add_choice (HashRef $choice) {
+    my %choices = (%{$self->choices}, %$choice);
+    $self->choices(\%choices);
+  }
+
   method remove_choice (Str $key_stem) {
     my @remove_keys = grep { /^$key_stem/i } keys %{ $self->choices };
 
