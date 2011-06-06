@@ -11,7 +11,9 @@ class Opoly::Board::Tile {
 
   has 'occupants' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
 
+  
   method arrive (Opoly::Player $player) {
+  # specific tile types should override this method BUT be sure to call it!
 
     # remove player from old location
     $player->location->leave($player);
@@ -20,7 +22,6 @@ class Opoly::Board::Tile {
     $player->location($self);
     push @{ $self->occupants }, $player;
 
-    # specific tile types should override this method BUT be sure to call it!
   }
 
   method leave (Opoly::Player $player) {

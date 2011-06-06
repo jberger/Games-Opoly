@@ -8,8 +8,13 @@ class Opoly::Board {
 
   has 'groups' => (isa => 'ArrayRef[Opoly::Board::Group]', is => 'ro', required => 1);
   has 'tiles' => (isa => 'ArrayRef', is => 'ro', required => 1);
+  has 'num_tiles' => (isa => 'Num', is => 'ro', lazy => 1, builder => '_num_tiles');
   has 'start' => (isa => 'Opoly::Board::Tile', is => 'ro', required => 1);
   has 'dice' => (isa => 'Opoly::Board::Dice', is => 'ro', builder => '_make_dice');
+
+  method _num_tiles () {
+    return scalar @{ $self->tiles };
+  }
 
   method _make_dice () {
     Opoly::Board::Dice->new();

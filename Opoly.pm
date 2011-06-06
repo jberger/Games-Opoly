@@ -5,7 +5,7 @@ class Opoly {
   use Opoly::Player;
   #use Opoly::Board;
 
-  use List::Util qw/first/;
+  use List::Util qw/first sum/;
 
   has 'players' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
   has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
@@ -25,18 +25,44 @@ class Opoly {
 
   method _first_player () {
     my $first_player = $self->players->[0];
+    $first_player->num_roll(1);
     $self->ui->message("First player: " . $first_player->name . "\n");
     $self->ui->flush_message;
     return $first_player;
   }
 
   method roll () {
+    # get player and dice
     my $player = $self->current_player;
     my $dice = $self->board->dice;
 
+    # roll
     my @roll = $dice->roll_two;
-    $self->ui->message("-- Rolled: [$roll[0],$roll[1]]\n")
-    
+    $self->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
+    my $roll_total = sum @roll;
+    my $is_doubles = ($roll[0] == $roll[1]);
+
+    # doubles logic
+    if ($is_doubles) {
+      if ($num->num_roll < 3 ) {
+        $player->num_roll( $player->num_roll() ++ );
+      } else {
+        #TODO handle 3 doubles
+        $player->num_roll(0);
+      }
+    } else {
+      $player->num_roll(0)
+    }
+
+    # move
+    my $current_address = $player->location->address;
+    my $new_address = ($current_address + $roll_total) % $self->board->num_tiles;
+    my $new_tile = $self->board->get_tile($new_address);
+    $self->ui->add_message(
+      "-- Arrived at: " . $new_tile->name() . "\n"
+    );
+    $new_tile->arrive($player);
+
   }
 
   method end_turn () {
@@ -53,6 +79,7 @@ class Opoly {
     } (@{ $self->players }, @{ $self->players });
     die "Panic! Could not determine next player" unless defined $next_player;
     $self->current_player( $next_player );
+    $next_player->num_roll(1);
 
     $self->ui->flush_message("Next player: " . $self->current_player->name . "\n");
     #$self->ui->flush_message;
