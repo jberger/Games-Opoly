@@ -32,6 +32,7 @@ class Opoly::UI::CLI
     until ($self->game->winner) {
       my %choices = (
         "End Turn" => sub { $self->game->end_turn },
+        %{ $self->game->current_player->choices },
       );
 
       if ( $self->game->current_player->num_roll ) {

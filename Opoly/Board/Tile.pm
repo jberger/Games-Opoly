@@ -13,7 +13,7 @@ class Opoly::Board::Tile {
 
   
   method arrive (Opoly::Player $player) {
-  # specific tile types should override this method BUT be sure to call it!
+  # specific tile types should after or override (BUT be sure to call) this method
 
     # remove player from old location
     $player->location->leave($player);
@@ -21,6 +21,9 @@ class Opoly::Board::Tile {
     # tell player and new location that the player has arrived
     $player->location($self);
     push @{ $self->occupants }, $player;
+
+    # do class specific actions
+    inner($player);
 
   }
 
@@ -37,6 +40,13 @@ class Opoly::Board::Tile {
 
 }
 
+role Opoly::Board::Role::Ownable {
+
+  has 'price' => (isa => 'Num', is => 'ro', required => 1);
+  has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
+
+}
+
 class Opoly::Board::Tile::Property 
   extends Opoly::Board::Tile
   with Opoly::Board::Role::Ownable {
@@ -46,6 +56,12 @@ class Opoly::Board::Tile::Property
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
   #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+
+  augment arrive (Opoly::Player $player) {
+    unless ($self->has_owner) {
+      $player->choices({ "Buy" => sub{1} });
+    }
+  }
   
 }
 
@@ -54,7 +70,7 @@ class Opoly::Board::Tile::Card
   
   has 'deck' => (isa => 'Str', is => 'ro', builder => '_set_deck', lazy => 1);
 
-  method _set_deck {
+  method _set_deck () {
     return $self->name;
   }
 
@@ -76,13 +92,6 @@ class Opoly::Board::Tile::Tax
   extends Opoly::Board::Tile {
 
 
-
-}
-
-role Opoly::Board::Role::Ownable {
-
-  has 'price' => (isa => 'Num', is => 'ro', required => 1);
-  has 'owner' => (isa => 'Opoly::Player', is => 'rw', default => undef);
 
 }
 
