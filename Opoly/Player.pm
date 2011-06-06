@@ -14,7 +14,11 @@ class Opoly::Player {
   method status () {
     my $message = "Name: " . $self->name . "\n";
     $message .= '-- Money: $' . $self->money . "\n";
-    $message .= "-- Properties: \t" . join("\n\t\t", map { $_->name } @{$self->properties}) . "\n";
+    $message .= "-- Properties: \t" . join( "\n\t\t",
+      map { $_->name . " [" . $_->group->name . "]" } 
+      sort { $a->address <=> $b->address } 
+      @{$self->properties}
+    ) . "\n";
   }
 
   method add_choice (HashRef $choice) {

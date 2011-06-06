@@ -40,7 +40,7 @@ class Opoly::UI::CLI
         %choices = (%choices, "Roll" => sub{ $self->game->roll });
       }
 
-      my $choice = $self->choice([keys %choices]);
+      my $choice = $self->choice([sort {$a cmp $b} keys %choices]);
       $choices{$choice}->();
     }
   }

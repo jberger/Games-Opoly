@@ -47,7 +47,6 @@ class Opoly {
       if ($player->num_roll < 3 ) {
         $player->num_roll( $player->num_roll() + 1 );
       } else {
-        #TODO handle 3 doubles
         $player->num_roll(0);
         $roll_total = 0;
         $player->remove_choice("Roll");
