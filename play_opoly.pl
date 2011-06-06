@@ -28,10 +28,7 @@ $game->add_player(
   Opoly::Player->new(name => 'Carolyn')
 );
 
-$game->roll;
-$game->end_turn;
-$game->roll;
-$game->end_turn;
+$game->play_game();
 
 __END__
 

@@ -10,7 +10,13 @@ class Opoly {
   has 'players' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
   has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
-  has 'ui' => (isa => 'Opoly::UI::CLI', is => 'ro', required => 1);
+  has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
+  has 'winner' => (isa => 'Bool', is => 'rw', default => 0);
+
+  method play_game () {
+    $self->ui->game($self);
+    $self->ui->play_game();
+  }
 
   method add_player ( Opoly::Player $player ) {
     $player->location($self->board->start);
