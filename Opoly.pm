@@ -91,4 +91,16 @@ class Opoly {
     #$self->ui->flush_message;
   }
 
+  method status ( Opoly::Player $player? ) {
+    my @players = defined $player ? ($player) : @{ $self->players };
+    $self->ui->add_message( "------  Player Status  ------\n");
+
+    foreach my $p (@players) {
+      $self->ui->add_message( $p->status );
+    }
+
+    $self->ui->flush_message;
+  }
+
 }
+

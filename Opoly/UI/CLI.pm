@@ -18,7 +18,7 @@ class Opoly::UI::CLI
 
     my @possible_responses;
     while (1) {
-      print "-- Select: " . join(', ', @$choices) . "  > ";
+      print "-- Select: " . join(', ', @$choices) . " :> ";
       chomp(my $user_response = <>);
       @possible_responses = grep { /^$user_response/i } @$choices;
       last if @possible_responses == 1;
@@ -31,6 +31,7 @@ class Opoly::UI::CLI
   override play_game () {
     until ($self->game->winner) {
       my %choices = (
+        "Status" => sub { $self->game->status },
         "End Turn" => sub { $self->game->end_turn },
         %{ $self->game->current_player->choices },
       );

@@ -11,6 +11,23 @@ class Opoly::Player {
   has 'num_roll' => (isa => 'Num', is => 'rw', default => 0);
   has 'choices' => (isa => 'HashRef', is => 'rw', default => sub{ {} });
 
+  method status () {
+    my $message = "Name: " . $self->name . "\n";
+    $message .= '-- Money: $' . $self->money . "\n";
+    $message .= "-- Properties: \t" . join("\n\t\t", map { $_->name } @{$self->properties}) . "\n";
+  }
+
+  method remove_choice (Str $key_stem) {
+    my @remove_keys = grep { /^$key_stem/i } keys %{ $self->choices };
+
+    die "Key to remove not uniquely determined" if (@remove_keys > 1);
+    return 0 if (@remove_keys == 0);
+
+    my %choices = %{$self->choices};
+    delete $choices{$remove_keys[0]};
+    $self->choices(\%choices);
+  }
+
 }
 
 

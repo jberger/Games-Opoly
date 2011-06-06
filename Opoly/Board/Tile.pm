@@ -33,9 +33,7 @@ class Opoly::Board::Tile {
     );
 
     #remove the buy choice from the player's menu
-    my %choices = %{$player->choices};
-    delete $choices{"Buy"};
-    $player->choices(\%choices);
+    $player->remove_choice("Buy");
   }
 
   sub BUILD {
@@ -70,9 +68,7 @@ class Opoly::Board::Tile::Ownable
     push @{ $player->properties }, $self;
 
     #remove the buy choice from the player's menu
-    my %choices = %{$player->choices};
-    delete $choices{"Buy"};
-    $player->choices(\%choices);
+    $player->remove_choice("Buy");
   }
 
 }
