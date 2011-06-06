@@ -73,6 +73,8 @@ class Opoly {
     $self->ui->flush_message();
 
     my $last_player = $self->current_player;
+    $last_player->choices({});
+
     my $use_next = 0;
     my $next_player = first {
       if ($_ == $last_player) {

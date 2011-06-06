@@ -31,6 +31,11 @@ class Opoly::Board::Tile {
     $self->occupants(
       grep { !( $_ == $player ) } @{ $self->occupants }
     );
+
+    #remove the buy choice from the player's menu
+    my %choices = %{$player->choices};
+    delete $choices{"Buy"};
+    $player->choices(\%choices);
   }
 
   sub BUILD {
@@ -40,28 +45,46 @@ class Opoly::Board::Tile {
 
 }
 
-role Opoly::Board::Role::Ownable {
+class Opoly::Board::Tile::Ownable 
+  extends Opoly::Board::Tile {
 
   has 'price' => (isa => 'Num', is => 'ro', required => 1);
   has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
 
+  augment arrive (Opoly::Player $player) {
+    unless ($self->has_owner) {
+      $player->choices({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
+    }
+    inner($player);
+  }
+
+  method buy (Opoly::Player $player) {
+    #check that the player has enough money
+    if ($player->money < $self->price) {
+      return "---- You don't have enough money\n";
+    }
+
+    #do the transaction
+    $player->money( $player->money - $self->price );
+    $self->owner($player);
+    push @{ $player->properties }, $self;
+
+    #remove the buy choice from the player's menu
+    my %choices = %{$player->choices};
+    delete $choices{"Buy"};
+    $player->choices(\%choices);
+  }
+
 }
 
 class Opoly::Board::Tile::Property 
-  extends Opoly::Board::Tile
-  with Opoly::Board::Role::Ownable {
+  extends Opoly::Board::Tile::Ownable {
 
   has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
   #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
-
-  augment arrive (Opoly::Player $player) {
-    unless ($self->has_owner) {
-      $player->choices({ "Buy" => sub{1} });
-    }
-  }
   
 }
 
@@ -77,14 +100,12 @@ class Opoly::Board::Tile::Card
 }
 
 class Opoly::Board::Tile::Railroad
-  with Opoly::Board::Role::Ownable
-  extends Opoly::Board::Tile {
+  extends Opoly::Board::Tile::Ownable {
 
 }
 
 class Opoly::Board::Tile::Utility
-  with Opoly::Board::Role::Ownable
-  extends Opoly::Board::Tile {
+  extends Opoly::Board::Tile::Ownable {
 
 }
 
