@@ -44,11 +44,12 @@ class Opoly {
 
     # doubles logic
     if ($is_doubles) {
-      if ($num->num_roll < 3 ) {
-        $player->num_roll( $player->num_roll() ++ );
+      if ($player->num_roll < 3 ) {
+        $player->num_roll( $player->num_roll() + 1 );
       } else {
         #TODO handle 3 doubles
         $player->num_roll(0);
+        $roll_total = 0;
       }
     } else {
       $player->num_roll(0)
@@ -56,7 +57,10 @@ class Opoly {
 
     # move
     my $current_address = $player->location->address;
-    my $new_address = ($current_address + $roll_total) % $self->board->num_tiles;
+    my $new_address = 
+      $roll_total ? 
+      ($current_address + $roll_total) % $self->board->num_tiles : 
+      $self->board->jail->address; # doubles logic sets $roll_total to zero to indicate "go to jail"
     my $new_tile = $self->board->get_tile($new_address);
     $self->ui->add_message(
       "-- Arrived at: " . $new_tile->name() . "\n"
