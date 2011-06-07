@@ -13,7 +13,7 @@ class Opoly::Board::Group {
 
 }
 
-class Opoly::Board::Group::Property
+class Opoly::Board::Group::Ownable
   extends Opoly::Board::Group {
 
   use List::MoreUtils qw/all uniq/;

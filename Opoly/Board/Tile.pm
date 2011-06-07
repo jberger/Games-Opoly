@@ -52,6 +52,8 @@ class Opoly::Board::Tile::Ownable
   has 'price' => (isa => 'Num', is => 'ro', required => 1);
   has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
 
+  has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+
   augment arrive (Opoly::Player $player) {
     if (! $self->has_owner) {
       $player->add_choice({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
@@ -85,9 +87,6 @@ class Opoly::Board::Tile::Property
   has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
-
-  #TODO require the next line and amend standard_board.conf to make it work
-  #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
   augment arrive (Opoly::Player $player) {
     if ($self->has_owner) {
