@@ -3,6 +3,7 @@ use MooseX::Declare;
 class Opoly {
 
   use Opoly::Player;
+  use Opoly::Dice;
   #use Opoly::Board;
 
   use List::Util qw/first sum/;
@@ -12,6 +13,12 @@ class Opoly {
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
   has 'winner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_winner');
+
+  has 'dice' => (isa => 'Opoly::Dice', is => 'ro', lazy => 1, builder => '_make_dice');
+  has 'loaded_dice' => (isa => 'Bool', is => 'ro', default => 0);
+  method _make_dice () {
+    $self->loaded_dice() ? Opoly::Dice::Loaded->new( ui => $self->ui ) : Opoly::Dice->new();
+  }
 
   method play_game () {
     $self->ui->game($self);
@@ -34,7 +41,7 @@ class Opoly {
   method roll () {
     # get player and dice
     my $player = $self->current_player;
-    my $dice = $self->board->dice;
+    my $dice = $self->dice;
 
     # roll
     my @roll = $dice->roll_two;

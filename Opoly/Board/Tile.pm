@@ -55,6 +55,7 @@ class Opoly::Board::Tile::Ownable
     } else {
       inner($player)
     }
+
   }
 
   method buy (Opoly::Player $player) {

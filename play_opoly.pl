@@ -12,6 +12,12 @@ use Opoly::Board::Group;
 use Opoly::Board::Tile;
 use Opoly::UI::CLI;
 
+use Getopt::Long;
+my $loaded_dice = 0;
+GetOptions(
+  "loaded" => \$loaded_dice,
+);
+
 my $board_file = 'standard_board.conf';
 
 my $board = do $board_file or die "Couldn't load board: $@, ";
@@ -19,6 +25,7 @@ my $board = do $board_file or die "Couldn't load board: $@, ";
 my $game = Opoly->new( 
   board => $board, 
   ui => Opoly::UI::CLI->new(),
+  "loaded_dice" => $loaded_dice,
 );
 
 $game->add_player(

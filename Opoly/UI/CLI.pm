@@ -28,6 +28,14 @@ class Opoly::UI::CLI
     return $possible_responses[0];
   }
 
+  method input (Str $question) {
+    $self->flush_message();
+
+    print $question . " :> ";
+    chomp( my $response = <> );
+    return $response;
+  }
+
   override play_game () {
     until ($self->game->has_winner) {
       my %choices = (
