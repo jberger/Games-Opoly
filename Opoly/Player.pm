@@ -10,6 +10,7 @@ class Opoly::Player {
   has 'properties' => (isa => 'ArrayRef[Opoly::Board::Tile]', is => 'rw', default => sub { [] } );
   has 'num_roll' => (isa => 'Num', is => 'rw', default => 0);
   has 'choices' => (isa => 'HashRef', is => 'rw', default => sub{ {} });
+  has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
 
   method status () {
     my $message = "Name: " . $self->name . "\n";

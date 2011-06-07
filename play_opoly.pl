@@ -29,10 +29,16 @@ my $game = Opoly->new(
 );
 
 $game->add_player(
-  Opoly::Player->new(name => 'Joel')
+  Opoly::Player->new(
+    name => 'Joel', 
+    ui => $game->ui,
+  )
 );
 $game->add_player(
-  Opoly::Player->new(name => 'Carolyn')
+  Opoly::Player->new(
+    name => 'Carolyn',
+    ui => $game->ui,
+  )
 );
 
 $game->play_game();

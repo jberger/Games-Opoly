@@ -55,6 +55,7 @@ class Opoly {
         $player->num_roll( $player->num_roll() + 1 );
       } else {
         # Too many doubles: go to jail
+        $self->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
         $player->num_roll(0);
         $player->remove_choice("Roll");
         $self->board->jail->arrive($player);
@@ -76,11 +77,7 @@ class Opoly {
     }
 
     my $new_tile = $self->board->get_tile($new_address);
-    $self->ui->add_message(
-      "-- Arrived at: " . $new_tile->name() . "\n"
-    );
     $new_tile->arrive($player);
-    #$self->ui->add_message($arrive_message);
 
   }
 

@@ -21,6 +21,9 @@ class Opoly::Board::Tile {
     # tell player and new location that the player has arrived
     $player->location($self);
     push @{ $self->occupants }, $player;
+    $player->ui->add_message(
+      "-- Arrived at: " . $self->name() . "\n"
+    );
 
     # do class specific actions
     inner($player);
@@ -61,7 +64,8 @@ class Opoly::Board::Tile::Ownable
   method buy (Opoly::Player $player) {
     #check that the player has enough money
     if ($player->money < $self->price) {
-      return "---- You don't have enough money\n";
+      $player->ui->add_message("---- You don't have enough money\n");
+      return;
     }
 
     #do the transaction
