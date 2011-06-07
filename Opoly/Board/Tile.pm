@@ -69,7 +69,7 @@ class Opoly::Board::Tile::Ownable
     }
 
     #do the transaction
-    $player->money( $player->money - $self->price );
+    $player->pay( $self->price );
     $self->owner($player);
     push @{ $player->properties }, $self;
 
@@ -86,6 +86,7 @@ class Opoly::Board::Tile::Property
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
+  #TODO require the next line and amend standard_board.conf to make it work
   #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
   augment arrive (Opoly::Player $player) {
@@ -111,6 +112,10 @@ class Opoly::Board::Tile::Card
 
 class Opoly::Board::Tile::Railroad
   extends Opoly::Board::Tile::Ownable {
+
+  augment arrive (Opoly::Player $player) {
+    
+  }
 
 }
 

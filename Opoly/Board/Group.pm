@@ -13,10 +13,24 @@ class Opoly::Board::Group {
 
 }
 
-#class Opoly::Board::Group::Property
-#extends Opoly::Board::Group {
-#
-#  has 'monopoly' => (isa => 'Bool', is => 'rw', default => 0);
-#
-#}
+class Opoly::Board::Group::Property
+  extends Opoly::Board::Group {
+
+  use List::MoreUtils qw/all uniq/;
+
+  has '+tiles' => (isa => 'ArrayRef[Opoly::Board::Tile::Ownable]');
+
+  method monopoly () {
+    my @tiles = @{ $self->tiles };
+
+    # check that all tiles have owners
+    return 0 unless all { $_->has_owner } @tiles;
+
+    # check that all tiles have the same owner
+    return 0 unless ( 1 == uniq @tiles);
+
+    return 1;
+  }
+
+}
 
