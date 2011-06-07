@@ -13,7 +13,7 @@ class Opoly::Board::Tile {
 
   
   method arrive (Opoly::Player $player) {
-  # specific tile types should after or override (BUT be sure to call) this method
+  # called on arrival ( usually after roll() )
 
     # remove player from old location
     $player->location->leave($player);
@@ -28,9 +28,9 @@ class Opoly::Board::Tile {
   }
 
   method leave (Opoly::Player $player) {
-    $self->occupants(
+    $self->occupants([ 
       grep { !( $_ == $player ) } @{ $self->occupants }
-    );
+    ]);
 
     #remove the buy choice from the player's menu
     $player->remove_choice("Buy");
@@ -50,10 +50,11 @@ class Opoly::Board::Tile::Ownable
   has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
 
   augment arrive (Opoly::Player $player) {
-    unless ($self->has_owner) {
+    if (! $self->has_owner) {
       $player->add_choice({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
+    } else {
+      inner($player)
     }
-    inner($player);
   }
 
   method buy (Opoly::Player $player) {
@@ -81,6 +82,14 @@ class Opoly::Board::Tile::Property
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
   #has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+
+  augment arrive (Opoly::Player $player) {
+    if ($self->has_owner) {
+      my $rent = $self->rent->[$self->houses];
+      $player->pay($rent, $self->owner);
+      return '-- Paid: $' . $rent . " to " . $self->owner . "\n";
+    }
+  }
   
 }
 
@@ -107,8 +116,6 @@ class Opoly::Board::Tile::Utility
 
 class Opoly::Board::Tile::Tax 
   extends Opoly::Board::Tile {
-
-
 
 }
 

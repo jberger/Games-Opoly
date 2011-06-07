@@ -11,7 +11,7 @@ class Opoly {
   has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
-  has 'winner' => (isa => 'Bool', is => 'rw', default => 0);
+  has 'winner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_winner');
 
   method play_game () {
     $self->ui->game($self);
@@ -47,9 +47,11 @@ class Opoly {
       if ($player->num_roll < 3 ) {
         $player->num_roll( $player->num_roll() + 1 );
       } else {
+        # Too many doubles: go to jail
         $player->num_roll(0);
-        $roll_total = 0;
         $player->remove_choice("Roll");
+        $self->board->jail->arrive($player);
+        return;
       }
     } else {
       $player->num_roll(0)
@@ -57,15 +59,21 @@ class Opoly {
 
     # move
     my $current_address = $player->location->address;
-    my $new_address = 
-      $roll_total ? 
-      ($current_address + $roll_total) % $self->board->num_tiles : 
-      $self->board->jail->address; # doubles logic sets $roll_total to zero to indicate "go to jail"
+    my $new_address = ($current_address + $roll_total) % $self->board->num_tiles;
+
+    # check for passing go and payout if so
+    my $passed_go = int( ($current_address + $roll_total) / $self->board->num_tiles);
+    if ($passed_go) {
+      $player->collect(200);
+      $self->ui->add_message( "-- Go: Collect \$200\n" );
+    }
+
     my $new_tile = $self->board->get_tile($new_address);
     $self->ui->add_message(
       "-- Arrived at: " . $new_tile->name() . "\n"
     );
     $new_tile->arrive($player);
+    #$self->ui->add_message($arrive_message);
 
   }
 

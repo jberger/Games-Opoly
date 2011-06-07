@@ -13,6 +13,7 @@ class Opoly::Player {
 
   method status () {
     my $message = "Name: " . $self->name . "\n";
+    $message .= '-- Location: ' . $self->location->name . "\n";
     $message .= '-- Money: $' . $self->money . "\n";
     $message .= "-- Properties: \t" . join( "\n\t\t",
       map { $_->name . " [" . $_->group->name . "]" } 
@@ -35,6 +36,24 @@ class Opoly::Player {
     my %choices = %{$self->choices};
     delete $choices{$remove_keys[0]};
     $self->choices(\%choices);
+  }
+
+  method collect (Num $amount) {
+    $self->money($self->money() + $amount);
+  }
+
+  method pay (Num $amount, Opoly::Player $payee?) {
+    #TODO this method assumes ability to have negative money
+
+    if ($self->money > $amount) {
+      $self->money($self->money() - $amount);
+    } else {
+      #TODO handle too little money
+    }
+
+    if (defined $payee) {
+      $payee->collect($amount);
+    }
   }
 
 }

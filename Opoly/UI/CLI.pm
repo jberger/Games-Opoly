@@ -29,7 +29,7 @@ class Opoly::UI::CLI
   }
 
   override play_game () {
-    until ($self->game->winner) {
+    until ($self->game->has_winner) {
       my %choices = (
         "Status" => sub { $self->game->status },
         "End Turn" => sub { $self->game->end_turn },
