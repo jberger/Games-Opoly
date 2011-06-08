@@ -8,10 +8,11 @@ class Opoly {
 
   use List::Util qw/first sum/;
 
-  has 'players' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
-  has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
+
+  has 'players' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
+  has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
   has 'winner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_winner');
 
   has 'dice' => (isa => 'Opoly::Dice', is => 'ro', lazy => 1, builder => '_make_dice');
@@ -57,7 +58,6 @@ class Opoly {
       } else {
         # Too many doubles: go to jail
         $self->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
-        $player->num_roll(0);
         $player->arrest($self->board->jail);
         return;
       }

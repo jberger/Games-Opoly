@@ -64,6 +64,7 @@ class Opoly::Player {
     $self->remove_choice("Roll");
     $jail->arrive($self);
     $self->in_jail(1);
+    $self->num_roll(0);
   } 
 
 }
