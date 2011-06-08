@@ -38,6 +38,7 @@ class Opoly {
     return $first_player;
   }
 
+  #Perhaps this method should be in Opoly::Player
   method roll () {
     # get player and dice
     my $player = $self->current_player;
@@ -57,8 +58,7 @@ class Opoly {
         # Too many doubles: go to jail
         $self->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
         $player->num_roll(0);
-        $player->remove_choice("Roll");
-        $self->board->jail->arrive($player);
+        $player->arrest($self->board->jail);
         return;
       }
     } else {
@@ -81,6 +81,7 @@ class Opoly {
 
   }
 
+  #Perhaps this method should be in Opoly::Player too.
   method end_turn () {
     $self->ui->flush_message();
 

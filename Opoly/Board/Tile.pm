@@ -56,9 +56,12 @@ class Opoly::Board::Tile::Ownable
   has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
   augment arrive (Opoly::Player $player) {
+    
     if (! $self->has_owner) {
+      #All ownable tiles behave the same if unowned, namely purchase if desired
       $player->add_choice({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
     } else {
+      #The tiles are different in their action if owned, therefore call class specific action here
       inner($player)
     }
 
@@ -101,6 +104,7 @@ class Opoly::Board::Tile::Property
   extends Opoly::Board::Tile::Ownable {
 
   has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
+
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
@@ -150,12 +154,28 @@ class Opoly::Board::Tile::Railroad
 class Opoly::Board::Tile::Utility
   extends Opoly::Board::Tile::Ownable {
 
+  augment arrive ( Opoly::Player $player ) {
+    
+  }
+
+}
+
+class Opoly::Board::Tile::Arrest
+  extends Opoly::Board::Tile {
+
+  has 'jail' => (isa => 'Opoly::Board::Tile', is => 'rw');
+
+  augment arrive ( Opoly::Player $player ) {
+    $player->arrest($self->jail);
+  }
+
 }
 
 class Opoly::Board::Tile::Tax 
   extends Opoly::Board::Tile {
 
   has 'amount' => (isa => 'Num', is => 'ro', required => 1);
+
   has 'percent' => (isa => 'Num', is => 'ro', default => 0);
 
   augment arrive (Opoly::Player $player) {

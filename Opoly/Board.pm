@@ -34,6 +34,9 @@ class Opoly::Board {
       @$tiles; 
     die "Board incomplete! Missing tiles " . join(', ', @missing_tiles) if @missing_tiles;
 
+    # Populate Arrest Tiles with related Jail tiles
+    map { $_->jail( $self->jail ) unless $_->jail } grep { $_->isa('Opoly::Board::Tile::Arrest') } @$tiles;
+
   }
 
 }
