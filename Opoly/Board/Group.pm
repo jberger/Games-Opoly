@@ -27,7 +27,7 @@ class Opoly::Board::Group::Ownable
     return 0 unless all { $_->has_owner } @tiles;
 
     # check that all tiles have the same owner
-    return 0 unless ( 1 == uniq @tiles);
+    return 0 unless ( 1 == uniq map { $_->owner } @tiles);
 
     return 1;
   }

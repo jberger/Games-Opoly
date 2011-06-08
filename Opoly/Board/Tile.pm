@@ -91,8 +91,12 @@ class Opoly::Board::Tile::Property
   augment arrive (Opoly::Player $player) {
     if ($self->has_owner) {
       my $rent = $self->rent->[$self->houses];
+      if ($self->houses == 0 and $self->group->monopoly) {
+        $rent *= 2;
+      }
+
       $player->pay($rent, $self->owner);
-      return '-- Paid: $' . $rent . " to " . $self->owner . "\n";
+      $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
     }
   }
   
