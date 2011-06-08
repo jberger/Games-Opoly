@@ -87,9 +87,12 @@ class Opoly::Board::Tile::Ownable
     $self->owner->collect( $self->price / 2 );
   }
 
-  method unmortgage () {
-    $self->mortgaged(0);
-    $self->owner->pay( 1.1 * $self->price / 2 );
+  method unmortgage () {  
+    if ( $self->owner->pay( 1.1 * $self->price / 2 ) ) {
+      $self->mortgaged(0);
+    } else {
+      $self->owner->ui->add_message("---- You don't have enough money\n");
+    }
   }
 
 }
@@ -145,6 +148,27 @@ class Opoly::Board::Tile::Utility
 
 class Opoly::Board::Tile::Tax 
   extends Opoly::Board::Tile {
+
+  has 'amount' => (isa => 'Num', is => 'ro', required => 1);
+  has 'percent' => (isa => 'Num', is => 'ro', default => 0);
+
+  augment arrive (Opoly::Player $player) {
+
+    my $amount = $self->amount;
+    if ($self->percent) {
+      my $percent_amount = $player->money * $self->percent / 100;
+      $amount = 
+        ($percent_amount < $amount)
+        ? $percent_amount
+        : $amount;
+    }
+
+    if ($player->pay($amount)) {
+      $player->ui->add_message("-- Paid: \$$amount for " . $self->name . "\n");
+    } else {
+      $player->ui->add_message("-- Cannot afford " . $self->name . "\n");
+    }
+  }
 
 }
 
