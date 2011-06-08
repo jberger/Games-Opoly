@@ -105,18 +105,16 @@ class Opoly::Board::Tile::Property
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
   augment arrive (Opoly::Player $player) {
-    if ($self->has_owner) {
-      my $rent = $self->rent->[$self->houses];
-      if ($self->houses == 0 and $self->group->monopoly) {
-        $rent *= 2;
-      }
-      if ( $self->mortgaged ) {
-        $rent = 0;
-      }
-
-      $player->pay($rent, $self->owner);
-      $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
+    my $rent = $self->rent->[$self->houses];
+    if ($self->houses == 0 and $self->group->monopoly) {
+      $rent *= 2;
     }
+    if ( $self->mortgaged ) {
+      $rent = 0;
+    }
+
+    $player->pay($rent, $self->owner);
+    $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
   }
   
 }
@@ -136,7 +134,15 @@ class Opoly::Board::Tile::Railroad
   extends Opoly::Board::Tile::Ownable {
 
   augment arrive (Opoly::Player $player) {
-    
+    my @rents = (25, 50, 100, 200);
+    my $rent = $rents[
+      1 + $self->group->number_owned_by($self->owner)
+    ];
+    if ($player->pay($rent, $self->owner) ) {
+      $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
+    } else {
+
+    }
   }
 
 }
@@ -169,12 +175,5 @@ class Opoly::Board::Tile::Tax
       $player->ui->add_message("-- Cannot afford " . $self->name . "\n");
     }
   }
-
-}
-
-role Opoly::Board::Role::Value {
-
-  #has 'type' => ( isa => 'Str', is => 'ro', required => 1);
-  has 'value' => ( isa => 'Num', is => 'ro', required => 1);
 
 }
