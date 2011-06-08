@@ -44,17 +44,18 @@ class Opoly::Player {
   }
 
   method pay (Num $amount, Opoly::Player $payee?) {
-    #TODO this method assumes ability to have negative money
 
     if ($self->money > $amount) {
       $self->money($self->money() - $amount);
     } else {
-      #TODO handle too little money
+      return 0;
     }
 
     if (defined $payee) {
       $payee->collect($amount);
     }
+
+    return 1;
   }
 
 }

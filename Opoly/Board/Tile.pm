@@ -51,6 +51,7 @@ class Opoly::Board::Tile::Ownable
 
   has 'price' => (isa => 'Num', is => 'ro', required => 1);
   has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
+  has 'mortgaged' => (isa => 'Bool', is => 'rw', default => 0);
 
   has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
@@ -64,19 +65,31 @@ class Opoly::Board::Tile::Ownable
   }
 
   method buy (Opoly::Player $player) {
-    #check that the player has enough money
-    if ($player->money < $self->price) {
+
+    #if the player can pay
+    if ( $player->pay( $self->price ) ) {
+      #do the transaction
+      $self->owner($player);
+      push @{ $player->properties }, $self;
+
+      #remove the buy choice from the player's menu
+      $player->remove_choice("Buy");
+    } else {
+      #if the player doesn't have enough money
       $player->ui->add_message("---- You don't have enough money\n");
       return;
     }
 
-    #do the transaction
-    $player->pay( $self->price );
-    $self->owner($player);
-    push @{ $player->properties }, $self;
+  }
 
-    #remove the buy choice from the player's menu
-    $player->remove_choice("Buy");
+  method mortgage () {
+    $self->mortgaged(1);
+    $self->owner->collect( $self->price / 2 );
+  }
+
+  method unmortgage () {
+    $self->mortgaged(0);
+    $self->owner->pay( 1.1 * $self->price / 2 );
   }
 
 }
@@ -93,6 +106,9 @@ class Opoly::Board::Tile::Property
       my $rent = $self->rent->[$self->houses];
       if ($self->houses == 0 and $self->group->monopoly) {
         $rent *= 2;
+      }
+      if ( $self->mortgaged ) {
+        $rent = 0;
       }
 
       $player->pay($rent, $self->owner);
