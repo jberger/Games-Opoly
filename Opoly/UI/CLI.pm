@@ -38,18 +38,20 @@ class Opoly::UI::CLI
 
   override play_game () {
     until ($self->game->has_winner) {
-      my %choices = (
+      my $player = $self->game->current_player;
+
+      my %actions = (
         "Status" => sub { $self->game->status },
         "End Turn" => sub { $self->game->end_turn },
-        %{ $self->game->current_player->choices },
+        %{ $player->actions },
       );
 
-      if ( $self->game->current_player->num_roll ) {
-        %choices = (%choices, "Roll" => sub{ $self->game->roll });
+      if ( $player->num_roll ) {
+        %actions = (%actions, "Roll" => sub{ $player->roll($self->game->board(), $self->game->dice() ) });
       }
 
-      my $choice = $self->choice([sort {$a cmp $b} keys %choices]);
-      $choices{$choice}->();
+      my $choice = $self->choice([sort {$a cmp $b} keys %actions]);
+      $actions{$choice}->();
     }
   }
 

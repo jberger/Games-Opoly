@@ -6,7 +6,7 @@ class Opoly {
   use Opoly::Dice;
   #use Opoly::Board;
 
-  use List::Util qw/first sum/;
+  use List::Util qw/first/;
 
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
@@ -39,54 +39,14 @@ class Opoly {
     return $first_player;
   }
 
-  #Perhaps this method should be in Opoly::Player
-  method roll () {
-    # get player and dice
-    my $player = $self->current_player;
-    my $dice = $self->dice;
-
-    # roll
-    my @roll = $dice->roll_two;
-    $self->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
-    my $roll_total = sum @roll;
-    my $is_doubles = ($roll[0] == $roll[1]);
-
-    # doubles logic
-    if ($is_doubles) {
-      if ($player->num_roll < 3 ) {
-        $player->num_roll( $player->num_roll() + 1 );
-      } else {
-        # Too many doubles: go to jail
-        $self->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
-        $player->arrest($self->board->jail);
-        return;
-      }
-    } else {
-      $player->num_roll(0)
-    }
-
-    # move
-    my $current_address = $player->location->address;
-    my $new_address = ($current_address + $roll_total) % $self->board->num_tiles;
-
-    # check for passing go and payout if so
-    my $passed_go = int( ($current_address + $roll_total) / $self->board->num_tiles);
-    if ($passed_go) {
-      $player->collect(200);
-      $self->ui->add_message( "-- Go: Collect \$200\n" );
-    }
-
-    my $new_tile = $self->board->get_tile($new_address);
-    $new_tile->arrive($player);
-
-  }
+  #N.B. roll method moved to Opoly::Player
 
   #Perhaps this method should be in Opoly::Player too.
   method end_turn () {
     $self->ui->flush_message();
 
     my $last_player = $self->current_player;
-    $last_player->choices({});
+    $last_player->actions({});
 
     my $use_next = 0;
     my $next_player = first {

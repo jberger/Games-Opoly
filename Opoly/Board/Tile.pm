@@ -35,8 +35,8 @@ class Opoly::Board::Tile {
       grep { !( $_ == $player ) } @{ $self->occupants }
     ]);
 
-    #remove the buy choice from the player's menu
-    $player->remove_choice("Buy");
+    #remove the buy action from the player's menu
+    $player->remove_action("Buy");
   }
 
   sub BUILD {
@@ -59,7 +59,7 @@ class Opoly::Board::Tile::Ownable
     
     if (! $self->has_owner) {
       #All ownable tiles behave the same if unowned, namely purchase if desired
-      $player->add_choice({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
+      $player->add_action({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
     } else {
       #The tiles are different in their action if owned, therefore call class specific action here
       inner($player)
@@ -75,8 +75,8 @@ class Opoly::Board::Tile::Ownable
       $self->owner($player);
       push @{ $player->properties }, $self;
 
-      #remove the buy choice from the player's menu
-      $player->remove_choice("Buy");
+      #remove the buy action from the player's menu
+      $player->remove_action("Buy");
     } else {
       #if the player doesn't have enough money
       $player->ui->add_message("---- You don't have enough money\n");
