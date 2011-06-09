@@ -64,12 +64,12 @@ class Opoly {
     #$self->ui->flush_message;
   }
 
-  method status ( Opoly::Player $player? ) {
-    my @players = defined $player ? ($player) : @{ $self->players };
+  method status ( Opoly::Player $input_player? ) {
+    my @players = defined $input_player ? ($input_player) : @{ $self->players };
     $self->ui->add_message( "------  Player Status  ------\n");
 
-    foreach my $p (@players) {
-      $self->ui->add_message( $p->status );
+    foreach my $player (@players) {
+      $self->ui->add_message( $player->status );
     }
 
     $self->ui->flush_message;
