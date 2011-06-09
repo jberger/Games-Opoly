@@ -140,7 +140,7 @@ class Opoly::Board::Tile::Railroad
   augment arrive (Opoly::Player $player) {
     my @rents = (25, 50, 100, 200);
     my $rent = $rents[
-      1 + $self->group->number_owned_by($self->owner)
+      $self->group->number_owned_by($self->owner) - 1
     ];
     if ($player->pay($rent, $self->owner) ) {
       $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
@@ -154,8 +154,21 @@ class Opoly::Board::Tile::Railroad
 class Opoly::Board::Tile::Utility
   extends Opoly::Board::Tile::Ownable {
 
+  has dice => (isa => 'Opoly::Dice', is => 'rw');
+
   augment arrive ( Opoly::Player $player ) {
-    
+    my @multipliers = (4, 10);
+    my $multiplier = $multipliers[
+      $self->group->number_owned_by($self->owner) - 1
+    ];
+    my $roll = $self->dice->roll_one();
+
+    my $rent = $roll * $multiplier;
+    $player->ui->add_message(
+      "-- Paid: \$$rent = [$roll] x $multiplier, to " . $self->owner->name . "\n" 
+    );
+
+    $player->pay($rent, $self->owner);
   }
 
 }

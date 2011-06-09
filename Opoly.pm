@@ -18,7 +18,14 @@ class Opoly {
   has 'dice' => (isa => 'Opoly::Dice', is => 'ro', lazy => 1, builder => '_make_dice');
   has 'loaded_dice' => (isa => 'Bool', is => 'ro', default => 0);
   method _make_dice () {
-    $self->loaded_dice() ? Opoly::Dice::Loaded->new( ui => $self->ui ) : Opoly::Dice->new();
+    my $dice = $self->loaded_dice() ? Opoly::Dice::Loaded->new( ui => $self->ui ) : Opoly::Dice->new();
+
+    # Populate Utility tiles with references to dice object
+    map { $_->dice( $dice ) } 
+      grep { $_->isa('Opoly::Board::Tile::Utility') } 
+      @{ $self->board->tiles };
+
+    return $dice;
   }
 
   method play_game () {

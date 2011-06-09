@@ -33,7 +33,7 @@ class Opoly::Board::Group::Ownable
   }
 
   method number_owned_by ( Opoly::Player $player ) {
-    my $num = grep { $_ == $player } map { $_->owner } @{ $self->tiles };
+    my $num = grep { defined $_ and $_ == $player } map { $_->owner } @{ $self->tiles };
 
     return $num;
   }
