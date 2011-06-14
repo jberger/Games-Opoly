@@ -42,12 +42,13 @@ class Opoly::UI::CLI
 
       my %actions = (
         "Status" => sub { $self->game->status },
-        "End Turn" => sub { $self->game->end_turn },
         %{ $player->actions },
       );
 
       if ( $player->num_roll ) {
-        %actions = (%actions, "Roll" => sub{ $player->roll($self->game->board(), $self->game->dice() ) });
+        $actions{"Roll"} = sub{ $player->roll($self->game->board(), $self->game->dice() ) };
+      } else {
+        $actions{"End Turn"} = sub { $self->game->end_turn };
       }
 
       my $choice = $self->choice([sort {$a cmp $b} keys %actions]);
