@@ -77,11 +77,7 @@ class Opoly::Board::Tile::Ownable
 
       #remove the buy action from the player's menu
       $player->remove_action("Buy");
-    } else {
-      #if the player doesn't have enough money
-      $player->ui->add_message("---- You don't have enough money\n");
-      return;
-    }
+    } 
 
   }
 
@@ -93,9 +89,7 @@ class Opoly::Board::Tile::Ownable
   method unmortgage () {  
     if ( $self->owner->pay( 1.1 * $self->price / 2 ) ) {
       $self->mortgaged(0);
-    } else {
-      $self->owner->ui->add_message("---- You don't have enough money\n");
-    }
+    } 
   }
 
 }
@@ -118,7 +112,7 @@ class Opoly::Board::Tile::Property
     }
 
     $player->pay($rent, $self->owner);
-    $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
+
   }
   
 }
@@ -142,11 +136,7 @@ class Opoly::Board::Tile::Railroad
     my $rent = $rents[
       $self->group->number_owned_by($self->owner) - 1
     ];
-    if ($player->pay($rent, $self->owner) ) {
-      $player->ui->add_message( '-- Paid: $' . $rent . " to " . $self->owner->name . "\n");
-    } else {
-
-    }
+    $player->pay($rent, $self->owner);
   }
 
 }
@@ -165,7 +155,7 @@ class Opoly::Board::Tile::Utility
 
     my $rent = $roll * $multiplier;
     $player->ui->add_message(
-      "-- Paid: \$$rent = [$roll] x $multiplier, to " . $self->owner->name . "\n" 
+      "-- Rent: \$$rent = [$roll] x $multiplier\n" 
     );
 
     $player->pay($rent, $self->owner);
@@ -202,11 +192,7 @@ class Opoly::Board::Tile::Tax
         : $amount;
     }
 
-    if ($player->pay($amount)) {
-      $player->ui->add_message("-- Paid: \$$amount for " . $self->name . "\n");
-    } else {
-      $player->ui->add_message("-- Cannot afford " . $self->name . "\n");
-    }
+    $player->pay($amount);
   }
 
 }

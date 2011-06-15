@@ -53,15 +53,21 @@ class Opoly::Player {
 
     if ($self->money > $amount) {
       $self->money($self->money() - $amount);
+      my $message = '---- Paid: $' . $amount;
+
+      if (defined $payee) {
+        $payee->collect($amount);
+        $message .= " to " . $payee->name;
+      }
+
+      $self->ui->add_message( $message . "\n");
+
+      return 1;
     } else {
+      $self->ui->add_message("---- You don't have enough money\n");
+
       return 0;
     }
-
-    if (defined $payee) {
-      $payee->collect($amount);
-    }
-
-    return 1;
   }
 
   method roll (Opoly::Board $board, Opoly::Dice $dice) {
