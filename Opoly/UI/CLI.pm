@@ -46,7 +46,7 @@ class Opoly::UI::CLI
       );
 
       if ( $player->num_roll ) {
-        $actions{"Roll"} = sub{ $player->roll($self->game->board(), $self->game->dice() ) };
+        $actions{"Roll"} = sub{ $self->game->roll() };
       } else {
         $actions{"End Turn"} = sub { $self->game->end_turn };
       }

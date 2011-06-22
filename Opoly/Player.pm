@@ -6,8 +6,6 @@ class Opoly::Player {
   use Opoly::Board;
   use Opoly::Board::Tile;
 
-  use List::Util qw/sum/;
-
   has 'name' => (isa => 'Str', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
 
@@ -68,44 +66,6 @@ class Opoly::Player {
 
       return 0;
     }
-  }
-
-  method roll (Opoly::Board $board, Opoly::Dice $dice) {
-
-    # roll
-    my @roll = $dice->roll_two;
-    $self->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
-    my $roll_total = sum @roll;
-    my $is_doubles = ($roll[0] == $roll[1]);
-
-    # doubles logic
-    if ($is_doubles) {
-      if ($self->num_roll < 3 ) {
-        $self->num_roll( $self->num_roll() + 1 );
-      } else {
-        # Too many doubles: go to jail
-        $self->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
-        $self->arrest($board->jail);
-        return;
-      }
-    } else {
-      $self->num_roll(0)
-    }
-
-    # move
-    my $current_address = $self->location->address;
-    my $new_address = ($current_address + $roll_total) % $board->num_tiles;
-
-    # check for passing go and payout if so
-    my $passed_go = int( ($current_address + $roll_total) / $board->num_tiles);
-    if ($passed_go) {
-      $self->collect(200);
-      $self->ui->add_message( "-- Go: Collect \$200\n" );
-    }
-
-    my $new_tile = $board->get_tile($new_address);
-    $new_tile->arrive($self);
-
   }
 
   method arrest ( Opoly::Board::Tile $jail ) {
