@@ -75,6 +75,12 @@ class Opoly::Board::Tile::Ownable
       $self->owner($player);
       push @{ $player->properties }, $self;
 
+      #check if this forms a monopoly
+      if ( $self->group->monopoly) {
+        #if so inform player, to allow Houses action to appear
+        $player->monopolies( [ $self->group, @{ $player->monopolies } ] );
+      }
+
       #remove the buy action from the player's menu
       $player->remove_action("Buy");
     } 
@@ -84,11 +90,15 @@ class Opoly::Board::Tile::Ownable
   method mortgage () {
     $self->mortgaged(1);
     $self->owner->collect( $self->price / 2 );
+
+    #TODO remove group from $owner->monopolies
   }
 
   method unmortgage () {  
     if ( $self->owner->pay( 1.1 * $self->price / 2 ) ) {
       $self->mortgaged(0);
+
+      #TODO check and add to $owner->monopolies if group now regains monopoly status
     } 
   }
 

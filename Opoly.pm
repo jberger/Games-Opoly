@@ -106,8 +106,8 @@ class Opoly {
     $self->current_player( $next_player );
     $next_player->num_roll(1);
 
-    $self->ui->flush_message("Next player: " . $self->current_player->name . "\n");
-    #$self->ui->flush_message;
+    $self->ui->add_message("Next player: " . $self->current_player->name . "\n");
+    $self->ui->flush_message;
   }
 
   method status ( Opoly::Player $input_player? ) {

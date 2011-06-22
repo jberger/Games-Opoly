@@ -29,6 +29,8 @@ class Opoly::Board::Group::Ownable
     # check that all tiles have the same owner
     return 0 unless ( 1 == uniq map { $_->owner } @tiles);
 
+    #TODO add override if any mortgaged.
+
     return 1;
   }
 
