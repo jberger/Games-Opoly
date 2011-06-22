@@ -46,11 +46,11 @@ class Opoly::UI::CLI
       );
 
       if ( @{ $player->monopolies } ) {
-        $actions{"Houses"} = sub { #TODO need to implement a method, probably in player menu tied to group method in each group };
+        $actions{"Houses"} = sub { $self->game->buy_houses };
       }
 
       if ( $player->num_roll ) {
-        $actions{"Roll"} = sub { $self->game->roll() };
+        $actions{"Roll"} = sub { $self->game->roll };
       } else {
         $actions{"End Turn"} = sub { $self->game->end_turn };
       }

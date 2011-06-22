@@ -75,11 +75,7 @@ class Opoly::Board::Tile::Ownable
       $self->owner($player);
       push @{ $player->properties }, $self;
 
-      #check if this forms a monopoly
-      if ( $self->group->monopoly) {
-        #if so inform player, to allow Houses action to appear
-        $player->monopolies( [ $self->group, @{ $player->monopolies } ] );
-      }
+      inner($player);
 
       #remove the buy action from the player's menu
       $player->remove_action("Buy");
@@ -123,6 +119,14 @@ class Opoly::Board::Tile::Property
 
     $player->pay($rent, $self->owner);
 
+  }
+
+  augment buy (Opoly::Player $player) {
+    #check if this forms a monopoly
+    if ( $self->group->monopoly) {
+      #if so inform player, to allow Houses action to appear
+      $player->monopolies( [ $self->group, @{ $player->monopolies } ] );
+    }
   }
   
 }

@@ -7,6 +7,7 @@ class Opoly {
   #use Opoly::Board;
 
   use List::Util qw/first sum/;
+  use Scalar::Util qw/looks_like_number/;
 
   has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
   has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
@@ -85,6 +86,27 @@ class Opoly {
 
     my $new_tile = $board->get_tile($new_address);
     $new_tile->arrive($player);
+
+  }
+
+  method buy_houses () {
+
+    my $player = $self->current_player;
+    my @groups = @{ $player->monopolies };
+
+    $player->ui->add_message( "-- Buy houses/hotels in which group?\n" );
+    my $group_name = $player->ui->choice( [ map {$_->name} @groups ] );
+    my ($group) = grep { $_->name eq $group_name } @groups;
+
+    my $houses_available = sum map { 5 - $_->houses } @{ $group->tiles };
+    $self->ui->add_message( "-- There are $houses_available houses available\n" );
+
+    my $number;
+    until (looks_like_number $number and $number <= $houses_available ) {
+      $number = $self->ui->input( "-- How many houses?" );
+    }
+
+    my @tiles = sort { $_->rent || $self->address } @{ $group->tiles };
 
   }
 
