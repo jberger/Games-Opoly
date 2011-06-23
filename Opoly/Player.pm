@@ -16,6 +16,7 @@ class Opoly::Player {
   has 'num_roll' => (isa => 'Num', is => 'rw', default => 0);
   has 'actions' => (isa => 'HashRef', is => 'rw', default => sub{ {} });
   has 'in_jail' => (isa => 'Num', is => 'rw', default => 0);
+  has 'get_out_of_jail_free' => (isa => 'Num', is => 'rw', default => 0);
 
   method status () {
     my $message = "Name: " . $self->name . "\n";

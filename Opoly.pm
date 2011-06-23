@@ -58,7 +58,20 @@ class Opoly {
 
   method _roll_jail () {
     my $player = $self->current_player;
-    #TODO get-out-of-jail-free
+
+    if ($player->get_out_of_jail_free) {
+      $player->ui->add_message( 
+        "-- Would you like to use your 'Get out of jail free' card?\n"
+      );
+      my $choice = $player->ui->choice( [ qw/Yes No/ ] );
+      if ($choice eq 'Yes') {
+        # turn in the card
+        $player->get_out_of_jail_free( $player->get_out_of_jail_free() - 1 );
+        $player->in_jail(0); # set free
+        $self->_roll_normal;
+        return;
+      }
+    }
 
     #player will not roll again for either outcome
     $player->num_roll(0); 
@@ -90,7 +103,7 @@ class Opoly {
       $player->in_jail(0); # set free
       $self->move($player, $roll_total);
       return;
-    }
+    } 
   }
 
   method _roll_normal () {
