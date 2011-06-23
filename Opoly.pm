@@ -114,7 +114,11 @@ class Opoly {
 
     my @tiles_houses = 
       map  { [$_, $num_each + ($remaining-- > 0)] } 
-      sort { $a->houses <=> $b->houses || $b->rent <=> $a->rent || $b->address <=> $a->address } 
+      sort {
+        $a->houses	<=> $b->houses		||
+        $b->rent->[0]	<=> $a->rent->[0]	||
+        $b->address	<=> $a->address 
+      } 
       @tiles;
 
     my $cost = sum map { $_->[1] * $houses_cost } @tiles_houses;

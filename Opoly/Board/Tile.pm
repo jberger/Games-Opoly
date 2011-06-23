@@ -85,16 +85,26 @@ class Opoly::Board::Tile::Ownable
 
   method mortgage () {
     $self->mortgaged(1);
-    $self->owner->collect( $self->price / 2 );
 
-    #TODO remove group from $owner->monopolies
+    my $collect = $self->price / 2;
+
+    # sell all houses in group
+    foreach my $tile ( @{ $self->group->tiles } ) {
+      $self->owner->ui->add_message( "-- Selling houses in group\n" );
+      $collect += $tile->houses * $tile->group->houses_cost() / 2;
+      $tile->houses(0);
+    }
+
+    # remove group from $owner->monopolies
+    $self->owner->monopolies( grep { $_ ne $self->group } @{ $self->owner->monopolies } );
+
+    # collect benefits of sale
+    $self->owner->collect( $collect );
   }
 
   method unmortgage () {  
     if ( $self->owner->pay( 1.1 * $self->price / 2 ) ) {
       $self->mortgaged(0);
-
-      #TODO check and add to $owner->monopolies if group now regains monopoly status
     } 
   }
 
@@ -106,7 +116,6 @@ class Opoly::Board::Tile::Property
   has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
 
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
-  has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
   has '+group' => (isa => 'Opoly::Board::Group::Property');
 
@@ -123,12 +132,20 @@ class Opoly::Board::Tile::Property
 
   }
 
-  augment buy (Opoly::Player $player) {
+  method _check_monopoly () {
     #check if this forms a monopoly
     if ( $self->group->monopoly) {
-      #if so inform player, to allow Houses action to appear
-      $player->monopolies( [ $self->group, @{ $player->monopolies } ] );
+      #if so inform owner, to allow Houses action to appear
+      $self->owner->monopolies( [ $self->group, @{ $self->owner->monopolies } ] );
     }
+  }
+
+  after unmortgage () {
+    $self->_check_monopoly;
+  }
+
+  augment buy (Opoly::Player $player) {
+    $self->_check_monopoly;
   }
   
 }

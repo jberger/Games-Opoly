@@ -22,7 +22,17 @@ class Opoly::Player {
     $message .= '-- Location: ' . $self->location->name . "\n";
     $message .= '-- Money: $' . $self->money . "\n";
     $message .= "-- Properties: \t" . join( "\n\t\t",
-      map { $_->name . " [" . $_->group->name . "]" } 
+      map { 
+        $_->name . 
+        " [" . $_->group->name . "] [" . 
+        (
+          $_->houses==5 
+            ? "hotel" 
+            : $_->houses==1 
+              ? "1 house" 
+              : $_->houses . " houses"
+        ) .
+        "]" } 
       sort { $a->address <=> $b->address } 
       @{$self->properties}
     ) . "\n";

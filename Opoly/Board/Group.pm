@@ -16,7 +16,7 @@ class Opoly::Board::Group {
 class Opoly::Board::Group::Ownable
   extends Opoly::Board::Group {
 
-  use List::MoreUtils qw/all uniq/;
+  use List::MoreUtils qw/all uniq any/;
 
   has '+tiles' => (isa => 'ArrayRef[Opoly::Board::Tile::Ownable]');
 
@@ -29,7 +29,8 @@ class Opoly::Board::Group::Ownable
     # check that all tiles have the same owner
     return 0 unless ( 1 == uniq map { $_->owner } @tiles);
 
-    #TODO add override if any mortgaged.
+    # check that none are mortgaged
+    return 0 if ( any { $_->mortgaged } @tiles );
 
     return 1;
   }
