@@ -108,6 +108,8 @@ class Opoly::Board::Tile::Property
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
   has 'hotel' => (isa => 'Bool', is => 'rw', default => 0);
 
+  has '+group' => (isa => 'Opoly::Board::Group::Property');
+
   augment arrive (Opoly::Player $player) {
     my $rent = $self->rent->[$self->houses];
     if ($self->houses == 0 and $self->group->monopoly) {

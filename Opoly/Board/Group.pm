@@ -42,3 +42,11 @@ class Opoly::Board::Group::Ownable
 
 }
 
+class Opoly::Board::Group::Property 
+  extends Opoly::Board::Group::Ownable {
+
+  has 'houses_cost' => ( isa => 'Num', is => 'ro', required => 1 );
+  has '+tiles' => ( isa => 'ArrayRef[Opoly::Board::Tile::Property]');
+
+}
+

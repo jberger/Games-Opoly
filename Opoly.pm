@@ -97,16 +97,34 @@ class Opoly {
     $player->ui->add_message( "-- Buy houses/hotels in which group?\n" );
     my $group_name = $player->ui->choice( [ map {$_->name} @groups ] );
     my ($group) = grep { $_->name eq $group_name } @groups;
+    my @tiles = @{ $group->tiles };
 
-    my $houses_available = sum map { 5 - $_->houses } @{ $group->tiles };
+    my $houses_cost = $group->houses_cost;
+
+    my $houses_available = sum map { 5 - $_->houses } @tiles;
     $self->ui->add_message( "-- There are $houses_available houses available\n" );
 
     my $number;
     until (looks_like_number $number and $number <= $houses_available ) {
-      $number = $self->ui->input( "-- How many houses?" );
+      $number = $self->ui->input( "-- How many houses (\$$houses_cost each)?" );
     }
 
-    my @tiles = sort { $_->rent || $self->address } @{ $group->tiles };
+    my $num_each = int( $number / ( scalar @tiles ) );
+    my $remaining = $number % scalar @tiles;
+
+    my @tiles_houses = 
+      map  { [$_, $num_each + ($remaining-- > 0)] } 
+      sort { $a->houses <=> $b->houses || $b->rent <=> $a->rent || $b->address <=> $a->address } 
+      @tiles;
+
+    my $cost = sum map { $_->[1] * $houses_cost } @tiles_houses;
+
+    if ( $player->pay($cost) ) {
+      map { 
+        my ($tile, $num) = @$_;
+        $tile->houses( $num + $tile->houses );
+      } @tiles_houses;
+    }
 
   }
 
