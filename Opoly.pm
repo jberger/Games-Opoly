@@ -72,11 +72,24 @@ class Opoly {
     my $roll_total = sum @roll;
     my $is_doubles = ($roll[0] == $roll[1]);
 
-    #TODO inform
     if ($is_doubles) {
+      $self->ui->add_message( "---- Doubles! You are set free!\n" );
+      $player->in_jail(0); # set free
       $self->move($player, $roll_total);
-    } else {
+      return;
+    } 
+    
+    if ($in_jail < 3) {
+      $player->ui->add_message( "---- Not doubles. Better luck next time!\n" );
       $player->in_jail($in_jail + 1);
+      return;
+    }
+
+    if ($player->pay(75)) {
+      $player->ui->add_message( "---- You paid to be released.\n" );
+      $player->in_jail(0); # set free
+      $self->move($player, $roll_total);
+      return;
     }
   }
 
