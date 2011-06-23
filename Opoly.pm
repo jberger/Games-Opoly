@@ -48,6 +48,39 @@ class Opoly {
   }
 
   method roll () {
+    my $player = $self->current_player;
+    if ($player->in_jail) {
+      $self->_roll_jail;
+    } else {
+      $self->_roll_normal;
+    }
+  }
+
+  method _roll_jail () {
+    my $player = $self->current_player;
+    #TODO get-out-of-jail-free
+
+    #player will not roll again for either outcome
+    $player->num_roll(0); 
+
+    my $dice = $self->dice;
+    my $in_jail = $player->in_jail;
+
+    # roll
+    my @roll = $dice->roll_two;
+    $player->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
+    my $roll_total = sum @roll;
+    my $is_doubles = ($roll[0] == $roll[1]);
+
+    #TODO inform
+    if ($is_doubles) {
+      $self->move($player, $roll_total);
+    } else {
+      $player->in_jail($in_jail + 1);
+    }
+  }
+
+  method _roll_normal () {
 
     my $player = $self->current_player;
     my $board = $self->board;
@@ -74,19 +107,34 @@ class Opoly {
     }
 
     # move
+    $self->move($player, $roll_total);
+  }
+
+  method move (Opoly::Player $player, Num|Opoly::Board::Tile $where) {
+    ## Takes a player to move and either a tile object to move to
+     # OR a number which represents the number of spaces to move
+     # NOT the address to move to (think go 3 spaces not go to address 3) 
+
+    my $board = $self->board;
     my $current_address = $player->location->address;
-    my $new_address = ($current_address + $roll_total) % $board->num_tiles;
+
+    my ($new_tile, $passed_go);
+    if (blessed $where) {
+      $new_tile = $where;
+      $passed_go = ($where->address <= $current_address);
+    } else {
+      my $new_address = ($current_address + $where) % $board->num_tiles;
+      $passed_go = int( ($current_address + $where) / $board->num_tiles);
+      $new_tile = $board->get_tile($new_address);
+    }
 
     # check for passing go and payout if so
-    my $passed_go = int( ($current_address + $roll_total) / $board->num_tiles);
     if ($passed_go) {
       $player->collect(200);
       $player->ui->add_message( "-- Go: Collect \$200\n" );
     }
 
-    my $new_tile = $board->get_tile($new_address);
     $new_tile->arrive($player);
-
   }
 
   method buy_houses () {
