@@ -128,7 +128,7 @@ class Opoly::Board::Tile::Property
       $rent = 0;
     }
 
-    $player->pay($rent, $self->owner);
+    $player->must_pay($rent, $self->owner);
 
   }
 
@@ -169,7 +169,7 @@ class Opoly::Board::Tile::Railroad
     my $rent = $rents[
       $self->group->number_owned_by($self->owner) - 1
     ];
-    $player->pay($rent, $self->owner);
+    $player->must_pay($rent, $self->owner);
   }
 
 }
@@ -191,7 +191,7 @@ class Opoly::Board::Tile::Utility
       "-- Rent: \$$rent = [$roll] x $multiplier\n" 
     );
 
-    $player->pay($rent, $self->owner);
+    $player->must_pay($rent, $self->owner);
   }
 
 }
@@ -225,7 +225,7 @@ class Opoly::Board::Tile::Tax
         : $amount;
     }
 
-    $player->pay($amount);
+    $player->must_pay($amount);
   }
 
 }

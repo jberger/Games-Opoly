@@ -98,7 +98,7 @@ class Opoly {
       return;
     }
 
-    if ($player->pay(75)) {
+    if ($player->must_pay(75)) {
       $player->ui->add_message( "---- You paid to be released.\n" );
       $player->in_jail(0); # set free
       $self->move($player, $roll_total);
@@ -212,6 +212,10 @@ class Opoly {
     my $last_player = $self->current_player;
     $last_player->actions({});
 
+    unless ( $last_player->active ) {
+      $last_player->ui->add_message( "-- Sorry, you lose!\n" );
+    }
+
     my $use_next = 0;
     my $next_player = first {
       if ($_ == $last_player) {
@@ -221,6 +225,11 @@ class Opoly {
       $use_next;
     } (@{ $self->players }, @{ $self->players });
     die "Panic! Could not determine next player" unless defined $next_player;
+
+    unless ( $last_player->active ) {
+      $self->_liquidate_player( $last_player );
+    }
+
     $self->current_player( $next_player );
     $next_player->num_roll(1);
 
@@ -237,6 +246,10 @@ class Opoly {
     }
 
     $self->ui->flush_message;
+  }
+
+  method _liquidate_player ( Opoly::Player $player ) {
+    
   }
 
 }

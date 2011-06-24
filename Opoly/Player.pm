@@ -17,6 +17,7 @@ class Opoly::Player {
   has 'actions' => (isa => 'HashRef', is => 'rw', default => sub{ {} });
   has 'in_jail' => (isa => 'Num', is => 'rw', default => 0);
   has 'get_out_of_jail_free' => (isa => 'Num', is => 'rw', default => 0);
+  has 'active' => (isa => 'Bool', is => 'rw', default => 1);
 
   method status () {
     my $message = "Name: " . $self->name . "\n";
@@ -57,6 +58,17 @@ class Opoly::Player {
 
   method collect (Num $amount) {
     $self->money($self->money() + $amount);
+  }
+
+  method must_pay (Num $amount, Opoly::Player $payee?) {
+    my @args = ($amount);
+    push @args, $payee if defined $payee;
+
+    if ( $self->pay(@args) ) {
+      return 1;
+    } else {
+      $self->active(0); # lose game
+    }
   }
 
   method pay (Num $amount, Opoly::Player $payee?) {
