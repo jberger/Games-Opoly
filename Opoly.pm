@@ -226,12 +226,12 @@ class Opoly {
     } (@{ $self->players }, @{ $self->players });
     die "Panic! Could not determine next player" unless defined $next_player;
 
+    $self->current_player( $next_player );
+    $next_player->num_roll(1);
+
     unless ( $last_player->active ) {
       $self->_liquidate_player( $last_player );
     }
-
-    $self->current_player( $next_player );
-    $next_player->num_roll(1);
 
     $self->ui->add_message("Next player: " . $self->current_player->name . "\n");
     $self->ui->flush_message;
@@ -249,7 +249,15 @@ class Opoly {
   }
 
   method _liquidate_player ( Opoly::Player $player ) {
-    
+    # take player off the board 
+    $player->location->leave($player);
+    # return any remainging tiles (shouldn't be any after firesale
+    $_->remove_owner for @{ $player->properties };
+
+    # remove player from list of players
+    $self->players([
+      grep {! ($_ == $player) } @{ $self->players }
+    ]);
   }
 
 }

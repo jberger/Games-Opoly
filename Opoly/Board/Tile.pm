@@ -50,7 +50,7 @@ class Opoly::Board::Tile::Ownable
   extends Opoly::Board::Tile {
 
   has 'price' => (isa => 'Num', is => 'ro', required => 1);
-  has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner');
+  has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner', clearer => 'remove_owner');
   has 'mortgaged' => (isa => 'Bool', is => 'rw', default => 0);
 
   has '+group' => (isa => 'Opoly::Board::Group::Ownable');
