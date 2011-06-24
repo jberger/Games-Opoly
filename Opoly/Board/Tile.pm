@@ -72,15 +72,17 @@ class Opoly::Board::Tile::Ownable
     #if the player can pay
     if ( $player->pay( $self->price ) ) {
       #do the transaction
-      $self->owner($player);
-      push @{ $player->properties }, $self;
-
-      inner($player);
+      $self->take_possession($player);
 
       #remove the buy action from the player's menu
       $player->remove_action("Buy");
     } 
 
+  }
+
+  method take_possession (Opoly::Player $player) {
+    $self->owner($player);
+    push @{ $player->properties }, $self;
   }
 
   method mortgage () {
@@ -144,7 +146,7 @@ class Opoly::Board::Tile::Property
     $self->_check_monopoly;
   }
 
-  augment buy (Opoly::Player $player) {
+  after take_possession (Opoly::Player $player) {
     $self->_check_monopoly;
   }
   

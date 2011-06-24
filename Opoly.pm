@@ -212,10 +212,6 @@ class Opoly {
     my $last_player = $self->current_player;
     $last_player->actions({});
 
-    unless ( $last_player->active ) {
-      $last_player->ui->add_message( "-- Sorry, you lose!\n" );
-    }
-
     my $use_next = 0;
     my $next_player = first {
       if ($_ == $last_player) {
@@ -229,8 +225,16 @@ class Opoly {
     $self->current_player( $next_player );
     $next_player->num_roll(1);
 
+    # if player reports that (s)he is no longer active (i.e. loses)
     unless ( $last_player->active ) {
-      $self->_liquidate_player( $last_player );
+      $last_player->ui->add_message( "-- Sorry, you lose!\n" );
+
+      $last_player->liquidate;
+
+      # remove last_player from list of players
+      $self->players([
+        grep { $_ != $last_player } @{ $self->players }
+      ]);
     }
 
     $self->ui->add_message("Next player: " . $self->current_player->name . "\n");
@@ -246,18 +250,6 @@ class Opoly {
     }
 
     $self->ui->flush_message;
-  }
-
-  method _liquidate_player ( Opoly::Player $player ) {
-    # take player off the board 
-    $player->location->leave($player);
-    # return any remainging tiles (shouldn't be any after firesale
-    $_->remove_owner for @{ $player->properties };
-
-    # remove player from list of players
-    $self->players([
-      grep {! ($_ == $player) } @{ $self->players }
-    ]);
   }
 
 }

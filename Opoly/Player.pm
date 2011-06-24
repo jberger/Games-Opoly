@@ -38,6 +38,8 @@ class Opoly::Player {
       sort { $a->address <=> $b->address } 
       @{$self->properties}
     ) . "\n";
+
+    return $message;
   }
 
   method add_action (HashRef $action) {
@@ -64,11 +66,34 @@ class Opoly::Player {
     my @args = ($amount);
     push @args, $payee if defined $payee;
 
-    if ( $self->pay(@args) ) {
-      return 1;
-    } else {
-      $self->active(0); # lose game
+    while (1) {
+
+      return 1 if ( $self->pay(@args) );
+      ## If player cannot pay:
+
+      $self->ui->add_message( "-- How are you going to pay?\n" );
+      my $method = $self->ui->choice( [qw/ Mortgage Trade Status Resign /] );
+
+      last if ($method eq 'Resign');
+
+      if ($method eq 'Status') {
+        $self->ui->add_message( $self->status );
+
+      } elsif ($method eq "Mortgage") {
+
+      } elsif ($method eq 'Trade') {
+
+      }
+
     }
+
+    ## Player resigns:
+
+    if (defined $payee) {
+      $_->take_possession($payee) for @{ $self->property };
+    }
+
+    $self->active(0); # lose game
   }
 
   method pay (Num $amount, Opoly::Player $payee?) {
@@ -97,6 +122,13 @@ class Opoly::Player {
     $self->in_jail(1);
     $self->num_roll(0);
   } 
+
+  method liquidate () {
+    # take player off the board 
+    $self->location->leave($self);
+    # return any remainging tiles (shouldn't be any after firesale)
+    $_->remove_owner for @{ $self->properties };
+  }
 
 }
 
