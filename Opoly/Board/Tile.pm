@@ -161,6 +161,10 @@ class Opoly::Board::Tile::Card
     return $self->name;
   }
 
+  method card () {
+    
+  }
+
 }
 
 class Opoly::Board::Tile::Railroad
