@@ -1,5 +1,14 @@
 use MooseX::Declare;
 
 class Opoly::Deck::Card {
-  has 'used' => ( isa => 'Bool', is => 'rw', default => 0 );
+  has 'text' => ( isa => 'Str', is => 'ro', required => 1 );
+
+  # coderef which is passed to grep as `@others = grep {$code->($_)} @all_player_objects`
+  # otherwise "all" or "none" (perhaps "rand")
+  has 'others' => ( isa => 'CodeRef|Str', is => 'ro', required => 1 );
+
+  # coderef which is called as $code->($player, @others) from above
+  has 'action' => ( isa => 'CodeRef', is => 'ro', required => 1 );
+
+  has 'seen' => ( isa => 'Bool', is => 'rw', default => 0 );
 }

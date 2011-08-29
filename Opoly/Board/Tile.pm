@@ -155,14 +155,11 @@ class Opoly::Board::Tile::Property
 class Opoly::Board::Tile::Card
   extends Opoly::Board::Tile {
   
-  has 'deck' => (isa => 'Str', is => 'ro', builder => '_set_deck', lazy => 1);
+  has 'deck' => (isa => 'Opoly::Deck', is => 'ro', required => 1);
 
-  method _set_deck () {
-    return $self->name;
-  }
-
-  method card () {
-    
+  augment arrive (Opoly::Player $player) {
+    my $card = $self->deck->draw;
+    $card->action->($player);
   }
 
 }
