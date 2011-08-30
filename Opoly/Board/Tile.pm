@@ -155,11 +155,23 @@ class Opoly::Board::Tile::Property
 class Opoly::Board::Tile::Card
   extends Opoly::Board::Tile {
   
-  has 'deck' => (isa => 'Opoly::Deck', is => 'ro', required => 1);
+  has 'deck' => ( isa => 'Opoly::Deck', is => 'ro', required => 1);
+  has 'game' => ( isa => 'Opoly', is => 'rw' ); #TODO make required once
 
   augment arrive (Opoly::Player $player) {
     my $card = $self->deck->draw;
-    $card->action->($player);
+    my @args = $player;
+    my $others = $card->others;
+
+    $self->game->ui->add_message( '---- ' . $card->text . "\n" );
+
+    if ($others eq 'all') {
+      push @args, @{ $self->game->players };
+    } elsif (ref $others eq 'CODE') {
+      push @args, grep { $others->($_) } @{ $self->game->players };
+    }
+
+    $card->action->(@args);
   }
 
 }

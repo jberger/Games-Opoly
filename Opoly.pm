@@ -29,6 +29,15 @@ class Opoly {
     return $dice;
   }
 
+  sub BUILD {
+    my $self = shift;
+
+    # pass game object to O::B::T::Card objects
+    map { $_->game($self) }
+      grep { $_->isa('Opoly::Board::Tile::Card') }
+      @{ $self->board->tiles };
+  }
+
   method play_game () {
     $self->ui->game($self);
     $self->ui->play_game();
