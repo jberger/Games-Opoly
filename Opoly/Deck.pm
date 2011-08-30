@@ -2,6 +2,7 @@ use MooseX::Declare;
 
 class Opoly::Deck {
   use List::Util qw/shuffle/;
+  use Carp;
 
   has 'cards' => ( isa => 'ArrayRef[Opoly::Deck::Card]', is => 'rw', required => 1 );
 
@@ -14,11 +15,10 @@ class Opoly::Deck {
   method _get_remaining ($deep = 0) {
     my $cards = $self->cards;
     my @remaining = grep { ! $_->seen } @$cards;
-    if (! @remaining and @$cards and ! $deep) {
+    if (! @remaining and @$cards) {
+      croak "Could not find a usable card" if $deep;
       $self->_reuse;
       @remaining = $self->_get_remaining(1);
-    } else {
-      return undef;
     }
     return @remaining;
   }
