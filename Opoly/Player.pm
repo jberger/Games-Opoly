@@ -35,7 +35,14 @@ class Opoly::Player {
               : $_->houses . " houses"
         ) .
         "]" } 
-      sort { $a->address <=> $b->address } 
+      sort { $a->address <=> $b->address }
+      grep { $_->isa('Opoly::Board::Tile::Property') }
+      @{$self->properties}
+    ) . "\n";
+    $message .= "-- Other Properties: \t" . join( "\n\t\t\t",
+      map { $_->name }
+      sort { $a->address <=> $b->address }
+      grep { ! $_->isa('Opoly::Board::Tile::Property') }
       @{$self->properties}
     ) . "\n";
 
