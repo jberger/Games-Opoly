@@ -11,7 +11,8 @@ class Opoly::UI {
   }
 
   method inform (Str $message = '') {
-    #override per UI implementation
+    #override/otherwise reimplement per UI implementation
+    $self->log($message) if $message;
   }
 
   #deprecated use inform or log
