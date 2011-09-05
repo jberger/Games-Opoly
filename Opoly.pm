@@ -51,8 +51,7 @@ class Opoly {
   method _first_player () {
     my $first_player = $self->players->[0];
     $first_player->num_roll(1);
-    $self->ui->message("First player: " . $first_player->name . "\n");
-    $self->ui->flush_message;
+    $self->ui->log("First player: " . $first_player->name . "\n");
     return $first_player;
   }
 
@@ -90,7 +89,7 @@ class Opoly {
 
     # roll
     my @roll = $dice->roll_two;
-    $player->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
+    $player->ui->inform("-- Rolled: [$roll[0]][$roll[1]]\n");
     my $roll_total = sum @roll;
     my $is_doubles = ($roll[0] == $roll[1]);
 
@@ -123,7 +122,7 @@ class Opoly {
 
     # roll
     my @roll = $dice->roll_two;
-    $player->ui->message("-- Rolled: [$roll[0]][$roll[1]]\n");
+    $player->ui->inform("-- Rolled: [$roll[0]][$roll[1]]\n");
     my $roll_total = sum @roll;
     my $is_doubles = ($roll[0] == $roll[1]);
 
@@ -216,8 +215,6 @@ class Opoly {
   }
 
   method end_turn () {
-    $self->ui->flush_message();
-
     my $last_player = $self->current_player;
     $last_player->actions({});
 
@@ -236,7 +233,7 @@ class Opoly {
 
     # if player reports that (s)he is no longer active (i.e. loses)
     unless ( $last_player->active ) {
-      $last_player->ui->add_message( "-- Sorry, you lose!\n" );
+      $last_player->ui->inform( "-- Sorry, you lose!\n" );
 
       $last_player->liquidate;
 
@@ -246,19 +243,17 @@ class Opoly {
       ]);
     }
 
-    $self->ui->add_message("Next player: " . $self->current_player->name . "\n");
-    $self->ui->flush_message;
+    $self->ui->inform("Next player: " . $self->current_player->name . "\n");
   }
 
   method status ( Opoly::Player $input_player? ) {
     my @players = defined $input_player ? ($input_player) : @{ $self->players };
-    $self->ui->add_message( "------  Player Status  ------\n");
+    $self->ui->inform( "------  Player Status  ------\n");
 
     foreach my $player (@players) {
-      $self->ui->add_message( $player->status );
+      $self->ui->inform( $player->status );
     }
 
-    $self->ui->flush_message;
   }
 
 }

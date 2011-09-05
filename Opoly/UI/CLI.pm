@@ -3,10 +3,17 @@ use MooseX::Declare;
 class Opoly::UI::CLI 
   extends Opoly::UI {
 
-  method flush_message (Str $message = '') {
-    $self->add_message($message);
-    print $self->message;
-    $self->message('');
+  before log (Str $message) {
+    $self->inform($message);
+  }
+
+  override inform (Str $message = '') {
+    print $message;
+  }
+
+  #transitional patch, deprecated
+  after add_message (Str $message = '') {
+    $self->inform($message);
   }
 
   method turn_menu () {
@@ -14,8 +21,6 @@ class Opoly::UI::CLI
   }
 
   method choice (ArrayRef[Str] $choices) {
-    $self->flush_message;
-
     my @possible_responses;
     while (1) {
       print "-- Select: " . join(', ', @$choices) . " :> ";
@@ -29,8 +34,6 @@ class Opoly::UI::CLI
   }
 
   method input (Str $question) {
-    $self->flush_message();
-
     print $question . " :> ";
     chomp( my $response = <> );
     return $response;
