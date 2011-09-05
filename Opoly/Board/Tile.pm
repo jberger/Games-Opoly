@@ -59,7 +59,7 @@ class Opoly::Board::Tile::Ownable
     
     if (! $self->has_owner) {
       #All ownable tiles behave the same if unowned, namely purchase if desired
-      $player->add_action({ 'Buy ($' . $self->price . ") " => sub{ $self->buy($player) } });
+      $player->add_action({ 'Buy ($' . $self->price . ")" => sub{ $self->buy($player) } });
     } else {
       #The tiles are different in their action if owned, therefore call class specific action here
       inner($player)

@@ -68,10 +68,10 @@ class Opoly {
     my $player = $self->current_player;
 
     if ($player->get_out_of_jail_free) {
-      $player->ui->add_message( 
+      my $choice = $player->ui->choice(
+        [ qw/Yes No/ ],
         "-- Would you like to use your 'Get out of jail free' card?\n"
       );
-      my $choice = $player->ui->choice( [ qw/Yes No/ ] );
       if ($choice eq 'Yes') {
         # turn in the card
         $player->get_out_of_jail_free( $player->get_out_of_jail_free() - 1 );
@@ -94,20 +94,20 @@ class Opoly {
     my $is_doubles = ($roll[0] == $roll[1]);
 
     if ($is_doubles) {
-      $self->ui->add_message( "---- Doubles! You are set free!\n" );
+      $self->ui->inform( "---- Doubles! You are set free!\n" );
       $player->in_jail(0); # set free
       $self->move($player, $roll_total);
       return;
     } 
     
     if ($in_jail < 3) {
-      $player->ui->add_message( "---- Not doubles. Better luck next time!\n" );
+      $player->ui->inform( "---- Not doubles. Better luck next time!\n" );
       $player->in_jail($in_jail + 1);
       return;
     }
 
     if ($player->must_pay(75)) {
-      $player->ui->add_message( "---- You paid to be released.\n" );
+      $player->ui->inform( "---- You paid to be released.\n" );
       $player->in_jail(0); # set free
       $self->move($player, $roll_total);
       return;
@@ -122,7 +122,7 @@ class Opoly {
 
     # roll
     my @roll = $dice->roll_two;
-    $player->ui->inform("-- Rolled: [$roll[0]][$roll[1]]\n");
+    $player->ui->log("-- Rolled: [$roll[0]][$roll[1]]\n");
     my $roll_total = sum @roll;
     my $is_doubles = ($roll[0] == $roll[1]);
 
@@ -132,7 +132,7 @@ class Opoly {
         $player->num_roll( $player->num_roll() + 1 );
       } else {
         # Too many doubles: go to jail
-        $player->ui->add_message("-- 3 doubles in a row! Go to Jail!\n");
+        $player->ui->inform("-- 3 doubles in a row! Go to Jail!\n");
         $player->arrest($board->jail);
         return;
       }
@@ -165,7 +165,7 @@ class Opoly {
     # check for passing go and payout if so
     if ($passed_go) {
       $player->collect(200);
-      $player->ui->add_message( "-- Go: Collect \$200\n" );
+      $player->ui->log( "-- Go: Collect \$200\n" );
     }
 
     $new_tile->arrive($player);
@@ -176,19 +176,20 @@ class Opoly {
     my $player = $self->current_player;
     my @groups = @{ $player->monopolies };
 
-    $player->ui->add_message( "-- Buy houses/hotels in which group?\n" );
-    my $group_name = $player->ui->choice( [ map {$_->name} @groups ] );
+    my $group_name = $player->ui->choice(
+      [ map {$_->name} @groups ],
+      "-- Buy houses/hotels in which group?\n"
+    );
     my ($group) = grep { $_->name eq $group_name } @groups;
     my @tiles = @{ $group->tiles };
 
     my $houses_cost = $group->houses_cost;
 
     my $houses_available = sum map { 5 - $_->houses } @tiles;
-    $self->ui->add_message( "-- There are $houses_available houses available\n" );
 
     my $number;
     until (looks_like_number $number and $number <= $houses_available ) {
-      $number = $self->ui->input( "-- How many houses (\$$houses_cost each)?" );
+      $number = $self->ui->input( "-- How many houses ($houses_available at \$$houses_cost each)?" );
     }
 
     my $num_each = int( $number / ( scalar @tiles ) );

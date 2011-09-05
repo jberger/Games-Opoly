@@ -10,16 +10,18 @@ class Opoly::UI {
     push @{ $self->game_log }, $message;
   }
 
-  method inform (Str $message = '') {
+  method inform (Str $message) {
     #override/otherwise reimplement per UI implementation
     $self->log($message) if $message;
   }
 
+  method choice (ArrayRef[Str] $choices, Str $message?) {
+    #override per UI implementation
+  }
+
   #deprecated use inform or log
   method add_message (Str $message = '') {
-    $self->message(
-      $self->message() . $message
-    );
+    $self->inform($message);
   }
 
   method play_game () {

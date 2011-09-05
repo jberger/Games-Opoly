@@ -11,16 +11,17 @@ class Opoly::UI::CLI
     print $message;
   }
 
-  #transitional patch, deprecated
-  after add_message (Str $message = '') {
-    $self->inform($message);
-  }
+  #after add_message (Str $message = '') {
+  #  $self->inform($message);
+  #}
 
   method turn_menu () {
     
   }
 
-  method choice (ArrayRef[Str] $choices) {
+  method choice ( ArrayRef[Str] $choices, Str $message? ) {
+    print $message if $message;
+
     my @possible_responses;
     while (1) {
       print "-- Select: " . join(', ', @$choices) . " :> ";
