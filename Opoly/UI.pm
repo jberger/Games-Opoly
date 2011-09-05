@@ -2,7 +2,7 @@ use MooseX::Declare;
 
 class Opoly::UI {
 
-  has 'message' => (isa => 'Str', is => 'rw', default => '');
+  #has 'message' => (isa => 'Str', is => 'rw', default => '');
   has 'game_log' => (isa => 'ArrayRef[Str]', is => 'rw', default => sub{ [] });
   has 'game' => (isa => 'Opoly', is => 'rw', lazy => 1, default => '');
 
@@ -17,11 +17,6 @@ class Opoly::UI {
 
   method choice (ArrayRef[Str] $choices, Str $message?) {
     #override per UI implementation
-  }
-
-  #deprecated use inform or log
-  method add_message (Str $message = '') {
-    $self->inform($message);
   }
 
   method play_game () {

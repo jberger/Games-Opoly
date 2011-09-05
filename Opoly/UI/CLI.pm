@@ -11,10 +11,6 @@ class Opoly::UI::CLI
     print $message;
   }
 
-  #after add_message (Str $message = '') {
-  #  $self->inform($message);
-  #}
-
   method turn_menu () {
     
   }

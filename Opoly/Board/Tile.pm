@@ -21,7 +21,7 @@ class Opoly::Board::Tile {
     # tell player and new location that the player has arrived
     $player->location($self);
     push @{ $self->occupants }, $player;
-    $player->ui->add_message(
+    $player->ui->log(
       "-- Arrived at: " . $self->name() . "\n"
     );
 
@@ -92,7 +92,7 @@ class Opoly::Board::Tile::Ownable
 
     # sell all houses in group
     foreach my $tile ( @{ $self->group->tiles } ) {
-      $self->owner->ui->add_message( "-- Selling houses in group\n" );
+      $self->owner->ui->inform( "-- Selling houses in group\n" );
       $collect += $tile->houses * $tile->group->houses_cost() / 2;
       $tile->houses(0);
     }
@@ -163,7 +163,7 @@ class Opoly::Board::Tile::Card
     my @args = $player;
     my $others = $card->others;
 
-    $self->game->ui->add_message( '---- ' . $card->text . "\n" );
+    $self->game->ui->inform( '---- ' . $card->text . "\n" );
 
     if ($others eq 'all') {
       push @args, @{ $self->game->players };
@@ -202,7 +202,7 @@ class Opoly::Board::Tile::Utility
     my $roll = $self->dice->roll_one();
 
     my $rent = $roll * $multiplier;
-    $player->ui->add_message(
+    $player->ui->log(
       "-- Rent: \$$rent = [$roll] x $multiplier\n" 
     );
 
