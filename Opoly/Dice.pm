@@ -24,7 +24,7 @@ class Opoly::Dice::Loaded
     my @nums = split(//, $response);
 
     unless ( (all { /\d{1}/ } @nums) and (@nums > 1) ) {
-      $self->ui->add_message("-- Could not understand response!\n");
+      $self->ui->inform("-- Could not understand response!\n");
       @nums = $self->roll_two();
     }
 

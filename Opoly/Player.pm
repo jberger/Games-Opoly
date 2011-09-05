@@ -71,13 +71,15 @@ class Opoly::Player {
       return 1 if ( $self->pay(@args) );
       ## If player cannot pay:
 
-      $self->ui->add_message( "-- How are you going to pay?\n" );
-      my $method = $self->ui->choice( [qw/ Mortgage Trade Status Resign /] );
+      my $method = $self->ui->choice(
+        [qw/ Mortgage Trade Status Resign /],
+        "-- How are you going to pay?\n"
+      );
 
       last if ($method eq 'Resign');
 
       if ($method eq 'Status') {
-        $self->ui->add_message( $self->status );
+        $self->ui->inform( $self->status );
 
       } elsif ($method eq "Mortgage") {
 
@@ -107,11 +109,11 @@ class Opoly::Player {
         $message .= " to " . $payee->name;
       }
 
-      $self->ui->add_message( $message . "\n");
+      $self->ui->inform( $message . "\n");
 
       return 1;
     } else {
-      $self->ui->add_message("---- You don't have enough money\n");
+      $self->ui->inform("---- You don't have enough money\n");
 
       return 0;
     }
