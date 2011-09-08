@@ -1,1 +1,5 @@
 A Perl/Moose Opoly-style game
+
+Note that this work is both incomplete and not in any type of finalized form.
+
+Given that I have no experience writing a game, I am having an especially hard time keeping proper encapsulation while allowing the game objects to have proper access to the UI. Comments and pull requests are encouraged. Thanks
