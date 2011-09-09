@@ -168,7 +168,11 @@ class Opoly {
       $player->ui->log( "-- Go: Collect \$200\n" );
     }
 
-    $new_tile->arrive($player);
+    # call arrive method of new tile, get action (if returned)
+    my $action = $new_tile->arrive($player);
+    # if action is returned, call with self as option
+    $action->action($self) if $action;
+
   }
 
   method buy_houses () {

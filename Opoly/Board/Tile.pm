@@ -26,8 +26,9 @@ class Opoly::Board::Tile {
     );
 
     # do class specific actions
-    inner($player);
+    my $action = inner($player);
 
+    return $action if $action;
   }
 
   method leave (Opoly::Player $player) {
@@ -56,15 +57,17 @@ class Opoly::Board::Tile::Ownable
   has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
   augment arrive (Opoly::Player $player) {
+    my $action;
     
     if (! $self->has_owner) {
       #All ownable tiles behave the same if unowned, namely purchase if desired
       $player->add_action({ 'Buy ($' . $self->price . ")" => sub{ $self->buy($player) } });
     } else {
       #The tiles are different in their action if owned, therefore call class specific action here
-      inner($player)
+      $action = inner($player);
     }
 
+    return $action if $action;
   }
 
   method buy (Opoly::Player $player) {
@@ -164,6 +167,7 @@ class Opoly::Board::Tile::Card
     my $others = $card->others;
 
     $self->game->ui->inform( '---- ' . $card->text . "\n" );
+    my $action = $card->action;
 
     if ($others eq 'all') {
       push @args, @{ $self->game->players };
@@ -171,7 +175,9 @@ class Opoly::Board::Tile::Card
       push @args, grep { $others->($_) } @{ $self->game->players };
     }
 
-    $card->action->(@args);
+    $action->args( \@args );
+
+    return $action;
   }
 
 }
