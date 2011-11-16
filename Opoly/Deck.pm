@@ -1,4 +1,5 @@
 use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 class Opoly::Deck {
   use List::Util qw/shuffle/;

@@ -1,4 +1,5 @@
 use MooseX::Declare;
+use Method::Signatures::Modifiers;
 
 class Opoly::Board {
 
@@ -20,7 +21,8 @@ class Opoly::Board {
     return $self->tiles->[$address]
   }
 
-  method BUILD ($) {
+  sub BUILD {
+    my $self = shift;
     # Test for a valid board
 
     my $tiles = $self->tiles;
