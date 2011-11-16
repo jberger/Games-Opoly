@@ -1,3 +1,10 @@
+use strict;
+use warnings;
+
+package Opoly::Collections::Boards::Standard;
+
+# Use Opoly::Collections::Boards::Standard->board to get a populated board object
+
 # Definitions of groups and tiles to compose board 
 
 my %groups = (
@@ -270,10 +277,15 @@ push @tiles, map {
 #TODO implement better ordering for finding duplicated/missed addresses
 #my @ordered_tiles;
 
-Opoly::Board->new(
+my $board = Opoly::Board->new(
   groups => [ values %groups ],
   tiles  => [ sort { $a->address <=> $b->address } @tiles ],
   start  => ( grep { $_->name eq 'Start' } @tiles ),
   jail   => ( grep { $_->name eq 'Jail' } @tiles ),
 );
+
+sub board {
+  return $board;
+}
+
 
