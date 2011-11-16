@@ -1,3 +1,10 @@
+use strict;
+use warnings;
+
+package Opoly::Collections::Decks::Standard;
+
+# Use Opoly::Collections::Decks::Standard->deck to get a populated deck object
+
 # definitions of decks and cards
 
 use Opoly::Deck;
@@ -17,4 +24,6 @@ my @cards =
 
 my $deck = Opoly::Deck->new( cards => \@cards );
 
-$deck;
+sub deck {
+  return $deck;
+}

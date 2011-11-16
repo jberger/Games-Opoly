@@ -7,6 +7,12 @@ package Opoly::Collections::Boards::Standard;
 
 # Definitions of groups and tiles to compose board 
 
+use Opoly::Board;
+use Opoly::Board::Group;
+use Opoly::Board::Tile;
+
+use Opoly::Collections::Decks::Standard;
+
 my %groups = (
   ( map { $_ => Opoly::Board::Group->new(name => $_) } qw(Corners Cards Taxes) ),
   ( map { $_ => Opoly::Board::Group::Ownable->new(name => $_) } qw(Railroads Utilities) ),
@@ -252,7 +258,7 @@ my @tiles = (
   ),
 );
 
-my $deck = do 'standard_deck.conf';
+my $deck = Opoly::Collections::Decks::Standard->deck();
 
 push @tiles, map { 
   Opoly::Board::Tile::Card->new(
