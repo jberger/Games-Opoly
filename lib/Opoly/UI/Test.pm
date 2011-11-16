@@ -1,40 +1,29 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::UI::CLI 
+class Opoly::UI::Test 
   extends Opoly::UI {
+
+  has 'message' => (isa => 'Str', is => 'rw', default => '');
+  has 'return'  => (isa => 'Str', is => 'rw', default => '');
+  has 'user_input' => (isa => 'Str', is => 'rw', default => '');
 
   before log (Str $message) {
     $self->inform($message);
   }
 
   override inform (Str $message = '') {
-    print $message;
-  }
-
-  method turn_menu () {
-    
+    self->message( $message );
   }
 
   override choice ( ArrayRef[Str] $choices, Str $message? ) {
-    print $message if $message;
-
-    my @possible_responses;
-    while (1) {
-      print "-- Select: " . join(', ', @$choices) . " :> ";
-      chomp(my $user_response = <>);
-      @possible_responses = grep { /^$user_response/i } @$choices;
-      last if @possible_responses == 1;
-      print "---- Could not understand response!\n";
-    }
-
-    return $possible_responses[0];
+    $self->message( $message ) if $message;
+    return $self->will_choose();
   }
 
   override input (Str $question) {
-    print $question . " :> ";
-    chomp( my $response = <> );
-    return $response;
+    $self->message( $question . " :> " );
+    return $self->user_input();
   }
 
   override play_game () {

@@ -16,6 +16,10 @@ class Opoly::UI {
     $self->log($message) if $message;
   }
 
+  method input (Str $question) {
+
+  }
+
   method choice (ArrayRef[Str] $choices, Str $message?) {
     #override per UI implementation
   }
