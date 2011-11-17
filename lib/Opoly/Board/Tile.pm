@@ -17,7 +17,8 @@ class Opoly::Board::Tile {
   # called on arrival ( usually after roll() )
 
     # remove player from old location
-    $player->location->leave($player);
+    my $old_location = $player->location;
+    $old_location->leave($player) if $old_location;
 
     # tell player and new location that the player has arrived
     $player->location($self);
