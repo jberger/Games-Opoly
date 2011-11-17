@@ -34,12 +34,10 @@ class Opoly::Board::Tile {
   }
 
   method leave (Opoly::Player $player) {
+    $player->leave;
     $self->occupants([ 
       grep { !( $_ == $player ) } @{ $self->occupants }
     ]);
-
-    #remove the buy action from the player's menu
-    $player->remove_action("Buy");
   }
 
   sub BUILD {
@@ -70,6 +68,11 @@ class Opoly::Board::Tile::Ownable
     }
 
     return $action if $action;
+  }
+
+  after leave (Opoly::Player $player) {
+    #remove the buy action from the player's menu
+    $player->remove_action("Buy");
   }
 
   method buy (Opoly::Player $player) {

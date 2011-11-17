@@ -4,6 +4,8 @@ use warnings;
 use Test::More;
 use Opoly::UI::Test;
 
+## N.B. some of the player object testing happens in t/tile.t
+
 my $ui = Opoly::UI::Test->new;
 
 use_ok('Opoly::Player');
