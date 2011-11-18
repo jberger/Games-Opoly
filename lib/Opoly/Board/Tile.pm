@@ -99,11 +99,7 @@ class Opoly::Board::Tile::Ownable
     my $collect = $self->price / 2;
 
     # sell all houses in group
-    foreach my $tile ( @{ $self->group->tiles } ) {
-      $self->owner->ui->inform( "-- Selling houses in group\n" );
-      $collect += $tile->houses * $tile->group->houses_cost() / 2;
-      $tile->houses(0);
-    }
+    $collect += inner();
 
     # remove group from $owner->monopolies
     $self->owner->monopolies( grep { $_ ne $self->group } @{ $self->owner->monopolies } );
@@ -140,6 +136,16 @@ class Opoly::Board::Tile::Property
 
     $player->must_pay($rent, $self->owner);
 
+  }
+
+  augment mortgage () {
+    my $collect = 0;
+    foreach my $tile ( @{ $self->group->tiles } ) {
+      $self->owner->ui->inform( "-- Selling houses in group\n" );
+      $collect += $tile->houses * $tile->group->houses_cost() / 2;
+      $tile->houses(0);
+    }
+    return $collect;
   }
 
   method _check_monopoly () {
