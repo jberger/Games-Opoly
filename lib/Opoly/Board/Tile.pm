@@ -99,7 +99,7 @@ class Opoly::Board::Tile::Ownable
     my $collect = $self->price / 2;
 
     # sell all houses in group
-    $collect += inner();
+    $collect += inner() || 0;
 
     # remove group from $owner->monopolies
     $self->owner->monopolies( grep { $_ ne $self->group } @{ $self->owner->monopolies } );

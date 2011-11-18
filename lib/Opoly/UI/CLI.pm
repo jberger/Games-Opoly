@@ -22,7 +22,12 @@ class Opoly::UI::CLI
     my @possible_responses;
     while (1) {
       print "-- Select: " . join(', ', @$choices) . " :> ";
-      chomp(my $user_response = <>);
+
+      my $user_response = <>;
+      ## prevent rare use of undef warnings
+      $user_response //= ''; 		#/# fix highlighter
+
+      chomp $user_response;
       @possible_responses = grep { /^$user_response/i } @$choices;
       last if @possible_responses == 1;
       print "---- Could not understand response!\n";
