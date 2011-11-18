@@ -223,6 +223,19 @@ class Opoly {
   method end_turn () {
     my $last_player = $self->current_player;
     $last_player->actions({});
+    $last_player->num_roll(0);
+
+    # if player reports that (s)he is no longer active (i.e. loses)
+    unless ( $last_player->active ) {
+      $last_player->ui->inform( "-- Sorry, you lose!\n" );
+
+      $last_player->liquidate;
+
+      # remove last_player from list of players
+      $self->players([
+        grep { $_ != $last_player } @{ $self->players }
+      ]);
+    }
 
     my $use_next = 0;
     my $next_player = first {
@@ -236,18 +249,6 @@ class Opoly {
 
     $self->current_player( $next_player );
     $next_player->num_roll(1);
-
-    # if player reports that (s)he is no longer active (i.e. loses)
-    unless ( $last_player->active ) {
-      $last_player->ui->inform( "-- Sorry, you lose!\n" );
-
-      $last_player->liquidate;
-
-      # remove last_player from list of players
-      $self->players([
-        grep { $_ != $last_player } @{ $self->players }
-      ]);
-    }
 
     $self->ui->inform("Next player: " . $self->current_player->name . "\n");
   }
