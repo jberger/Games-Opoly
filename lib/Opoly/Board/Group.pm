@@ -47,8 +47,57 @@ class Opoly::Board::Group::Ownable
 class Opoly::Board::Group::Property 
   extends Opoly::Board::Group::Ownable {
 
+  use Carp;
+  use List::Util 'sum';
+
   has 'houses_cost' => ( isa => 'Num', is => 'ro', required => 1 );
   has '+tiles' => ( isa => 'ArrayRef[Opoly::Board::Tile::Property]');
+
+  method houses_available () {
+    return sum map { 5 - $_->houses } @{ $self->tiles };
+  } 
+
+  method buy_houses ( Num $number ) {
+    my $houses_cost = $self->houses_cost;
+    my @tiles = @{ $self->tiles };
+
+    my $owner;
+    my @owners = do {
+      my %seen;
+      grep { ! $seen{$_+0}++ } map { $_->owner } @tiles;
+    };
+    if ( 1 == @owners ) {
+      $owner = $owners[0];
+    } else {
+      carp "Zero or multiple owners found in group, buying houses not possible";
+      return 0;
+    }
+
+    my $num_each = int( $number / ( scalar @tiles ) );
+    my $remaining = $number % scalar @tiles;
+
+    my @tiles_houses = 
+      map  { [$_, $num_each + ($remaining-- > 0)] } 
+      sort {
+        $a->houses	<=> $b->houses		||
+        $b->rent->[0]	<=> $a->rent->[0]	||
+        $b->address	<=> $a->address 
+      } 
+      @tiles;
+
+    my $cost = sum map { $_->[1] * $houses_cost } @tiles_houses;
+
+    if ( $owner->pay($cost) ) {
+      map { 
+        my ($tile, $num) = @$_;
+        $tile->houses( $num + $tile->houses );
+      } @tiles_houses;
+
+      return 1;
+    }
+
+    return 0;
+  }
 
 }
 

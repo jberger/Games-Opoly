@@ -190,33 +190,14 @@ class Opoly {
 
     my $houses_cost = $group->houses_cost;
 
-    my $houses_available = sum map { 5 - $_->houses } @tiles;
+    my $houses_available = $group->houses_available;
 
     my $number;
     until (looks_like_number $number and $number <= $houses_available ) {
       $number = $self->ui->input( "-- How many houses ($houses_available at \$$houses_cost each)?" );
     }
 
-    my $num_each = int( $number / ( scalar @tiles ) );
-    my $remaining = $number % scalar @tiles;
-
-    my @tiles_houses = 
-      map  { [$_, $num_each + ($remaining-- > 0)] } 
-      sort {
-        $a->houses	<=> $b->houses		||
-        $b->rent->[0]	<=> $a->rent->[0]	||
-        $b->address	<=> $a->address 
-      } 
-      @tiles;
-
-    my $cost = sum map { $_->[1] * $houses_cost } @tiles_houses;
-
-    if ( $player->pay($cost) ) {
-      map { 
-        my ($tile, $num) = @$_;
-        $tile->houses( $num + $tile->houses );
-      } @tiles_houses;
-    }
+    $group->buy_houses( $number );
 
   }
 
