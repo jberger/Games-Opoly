@@ -64,7 +64,7 @@ class Opoly::Board::Tile::Ownable
       $player->add_action({ 'Buy ($' . $self->price . ")" => sub{ $self->buy($player) } });
     } else {
       #The tiles are different in their action if owned, therefore call class specific action here
-      $action = inner($player);
+      $action = inner($player) unless $self->mortgaged;
     }
 
     return $action if $action;
@@ -130,9 +130,11 @@ class Opoly::Board::Tile::Property
     if ($self->houses == 0 and $self->group->monopoly) {
       $rent *= 2;
     }
-    if ( $self->mortgaged ) {
-      $rent = 0;
-    }
+
+    ## in O::B::T::O made inner action dependent on not being mortgaged
+    #if ( $self->mortgaged ) {
+    #  $rent = 0;
+    #}
 
     $player->must_pay($rent, $self->owner);
 
