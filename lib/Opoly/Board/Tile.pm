@@ -102,6 +102,7 @@ class Opoly::Board::Tile::Ownable
     $collect += inner() || 0;
 
     # remove group from $owner->monopolies
+    # (although this seems asymmetric, since monopoly isn't done here, this seems safest)
     $self->owner->monopolies( grep { $_ != $self->group } @{ $self->owner->monopolies } );
 
     # collect benefits of sale
