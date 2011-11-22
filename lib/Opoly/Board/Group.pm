@@ -28,12 +28,13 @@ class Opoly::Board::Group::Ownable
     return 0 unless all { $_->has_owner } @tiles;
 
     # check that all tiles have the same owner
-    return 0 unless ( 1 == uniq map { $_->owner } @tiles);
+    my @owners = uniq map { $_->owner } @tiles;
+    return 0 unless ( 1 == @owners );
 
     # check that none are mortgaged
     return 0 if ( any { $_->mortgaged } @tiles );
 
-    return 1;
+    return $owners[0];
   }
 
   method number_owned_by ( Opoly::Player $player ) {
@@ -61,14 +62,8 @@ class Opoly::Board::Group::Property
     my $houses_cost = $self->houses_cost;
     my @tiles = @{ $self->tiles };
 
-    my $owner;
-    my @owners = do {
-      my %seen;
-      grep { ! $seen{$_+0}++ } map { $_->owner } @tiles;
-    };
-    if ( 1 == @owners ) {
-      $owner = $owners[0];
-    } else {
+    my $owner = $self->monopoly;
+    unless ( $owner ) {
       carp "Zero or multiple owners found in group, buying houses not possible";
       return 0;
     }
