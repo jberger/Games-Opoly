@@ -55,6 +55,12 @@ is( $player->money, $money-=$price, 'After purchase: player paid correct amount'
 is( $group->number_owned_by( $player ), 1, 'After purchase: group reports "one owned" by player' );
 ok( $group->monopoly, 'After purchase: does constitute monopoly' );
 
+is( $group->houses_available, 5, 'Before buying houses: 5 houses available' );
+$group->buy_houses(2);
+is( $group->houses_available, 3, 'After buying 2 houses: 3 houses available' );
+is( $tile->houses, 2, 'After buying 2 houses, tile reports having 2 houses' );
+is( $player->money, ($money-=2*$houses_cost), 'After buying houses, player cash is correct' );
+
 # mortgaging
 $tile->mortgage;
 

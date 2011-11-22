@@ -68,6 +68,12 @@ class Opoly::Board::Group::Property
       return 0;
     }
 
+    my $num_available = $self->houses_available;
+    if ( $number > $num_available ) {
+      carp "Too many houses requested, buying max ($num_available) instead";
+      $number = $num_available;
+    }
+
     my $num_each = int( $number / ( scalar @tiles ) );
     my $remaining = $number % scalar @tiles;
 

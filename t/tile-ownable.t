@@ -55,6 +55,7 @@ ok( ! (grep { /^Buy/ } keys %{ $player->actions }), 'After purchase ownable tile
 # test some group stuff
 is( $group->number_owned_by( $player ), 2, 'After purchase: group reports "two owned" by player' );
 ok( $group->monopoly, 'After purchase: constitutes monopoly' );
+is( $group->monopoly, $player, 'Group monopoly method, when true, returns monopoly holder player object' );
 
 # mortgaging
 $tile->mortgage;
