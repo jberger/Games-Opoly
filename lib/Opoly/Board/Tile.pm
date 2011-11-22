@@ -30,7 +30,11 @@ class Opoly::Board::Tile {
     # do class specific actions
     my $action = inner($player);
 
-    return $action if $action;
+    if ($action) {
+      return $action;
+    } else {
+      return 0;
+    }
   }
 
   method leave (Opoly::Player $player) {
@@ -139,6 +143,7 @@ class Opoly::Board::Tile::Property
 
     $player->must_pay($rent, $self->owner);
 
+    return 0;
   }
 
   augment mortgage () {

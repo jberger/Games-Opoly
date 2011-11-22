@@ -71,6 +71,8 @@ class Opoly::Player {
   }
 
   method must_pay (Num $amount, Opoly::Player $payee?) {
+    return 1 if (defined $payee and $self == $payee);
+
     my @args = ($amount);
     push @args, $payee if defined $payee;
 
@@ -107,6 +109,7 @@ class Opoly::Player {
   }
 
   method pay (Num $amount, Opoly::Player $payee?) {
+    return 1 if (defined $payee and $self == $payee);
 
     if ($self->money > $amount) {
       $self->money($self->money() - $amount);
