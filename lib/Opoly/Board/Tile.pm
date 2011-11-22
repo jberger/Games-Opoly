@@ -178,33 +178,6 @@ class Opoly::Board::Tile::Property
   
 }
 
-class Opoly::Board::Tile::Card
-  extends Opoly::Board::Tile {
-  
-  has 'deck' => ( isa => 'Opoly::Deck', is => 'ro', required => 1);
-  has 'game' => ( isa => 'Opoly', is => 'rw' ); #TODO make required once
-
-  augment arrive (Opoly::Player $player) {
-    my $card = $self->deck->draw;
-    my @args = $player;
-    my $others = $card->others;
-
-    $self->game->ui->inform( '---- ' . $card->text . "\n" );
-    my $action = $card->action;
-
-    if ($others eq 'all') {
-      push @args, @{ $self->game->players };
-    } elsif (ref $others eq 'CODE') {
-      push @args, grep { $others->($_) } @{ $self->game->players };
-    }
-
-    $action->args( \@args );
-
-    return $action;
-  }
-
-}
-
 class Opoly::Board::Tile::Railroad
   extends Opoly::Board::Tile::Ownable {
 
@@ -252,6 +225,33 @@ class Opoly::Board::Tile::Utility
     );
 
     $player->must_pay($rent, $self->owner);
+  }
+
+}
+
+class Opoly::Board::Tile::Card
+  extends Opoly::Board::Tile {
+  
+  has 'deck' => ( isa => 'Opoly::Deck', is => 'ro', required => 1);
+  has 'game' => ( isa => 'Opoly', is => 'rw' ); #TODO make required once
+
+  augment arrive (Opoly::Player $player) {
+    my $card = $self->deck->draw;
+    my @args = $player;
+    my $others = $card->others;
+
+    $self->game->ui->inform( '---- ' . $card->text . "\n" );
+    my $action = $card->action;
+
+    if ($others eq 'all') {
+      push @args, @{ $self->game->players };
+    } elsif (ref $others eq 'CODE') {
+      push @args, grep { $others->($_) } @{ $self->game->players };
+    }
+
+    $action->args( \@args );
+
+    return $action;
   }
 
 }
