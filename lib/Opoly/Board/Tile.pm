@@ -60,6 +60,10 @@ class Opoly::Board::Tile::Ownable
 
   has '+group' => (isa => 'Opoly::Board::Group::Ownable');
 
+  method get_rent () {
+    return 0; #override per subclass
+  }
+
   augment arrive (Opoly::Player $player) {
     my $action;
     
@@ -130,16 +134,16 @@ class Opoly::Board::Tile::Property
 
   has '+group' => (isa => 'Opoly::Board::Group::Property');
 
-  augment arrive (Opoly::Player $player) {
+  override get_rent () {
     my $rent = $self->rent->[$self->houses];
     if ($self->houses == 0 and $self->group->monopoly) {
       $rent *= 2;
     }
+    return $rent;
+  }
 
-    ## in O::B::T::O made inner action dependent on not being mortgaged
-    #if ( $self->mortgaged ) {
-    #  $rent = 0;
-    #}
+  augment arrive (Opoly::Player $player) {
+    my $rent = $self->get_rent;
 
     $player->must_pay($rent, $self->owner);
 
@@ -204,11 +208,16 @@ class Opoly::Board::Tile::Card
 class Opoly::Board::Tile::Railroad
   extends Opoly::Board::Tile::Ownable {
 
-  augment arrive (Opoly::Player $player) {
+  override get_rent () {
     my @rents = (25, 50, 100, 200);
     my $rent = $rents[
       $self->group->number_owned_by($self->owner) - 1
     ];
+    return $rent;
+  }
+
+  augment arrive (Opoly::Player $player) {
+    my $rent = $self->get_rent;
     $player->must_pay($rent, $self->owner);
   }
 
@@ -219,7 +228,7 @@ class Opoly::Board::Tile::Utility
 
   has dice => (isa => 'Opoly::Dice', is => 'rw');
 
-  augment arrive ( Opoly::Player $player ) {
+  override get_rent () {
     my @multipliers = (4, 10);
     my $multiplier = $multipliers[
       $self->group->number_owned_by($self->owner) - 1
@@ -227,6 +236,17 @@ class Opoly::Board::Tile::Utility
     my $roll = $self->dice->roll_one();
 
     my $rent = $roll * $multiplier;
+
+    if (wantarray) {
+      return ($rent, $roll, $multiplier);
+    } else {
+      return $rent;
+    }
+  }
+
+  augment arrive ( Opoly::Player $player ) {
+    my ($rent, $roll, $multiplier) = $self->get_rent;
+
     $player->ui->log(
       "-- Rent: \$$rent = [$roll] x $multiplier\n" 
     );
