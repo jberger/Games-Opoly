@@ -4,11 +4,11 @@ use warnings;
 use Test::More;
 use Data::Dumper;
 
-use Opoly::UI::Test;
+use Games::Opoly::UI::Test;
 
-use_ok('Opoly::Dice');
-my $dice = Opoly::Dice->new;
-isa_ok( $dice, 'Opoly::Dice' );
+use_ok('Games::Opoly::Dice');
+my $dice = Games::Opoly::Dice->new;
+isa_ok( $dice, 'Games::Opoly::Dice' );
 
 {
   my %rolls;
@@ -41,10 +41,10 @@ isa_ok( $dice, 'Opoly::Dice' );
 }
 
 {
-  my $ui = Opoly::UI::Test->new();
-  my $loaded = Opoly::Dice::Loaded->new( ui => $ui );
-  isa_ok( $loaded, 'Opoly::Dice' );
-  isa_ok( $loaded, 'Opoly::Dice::Loaded' );
+  my $ui = Games::Opoly::UI::Test->new();
+  my $loaded = Games::Opoly::Dice::Loaded->new( ui => $ui );
+  isa_ok( $loaded, 'Games::Opoly::Dice' );
+  isa_ok( $loaded, 'Games::Opoly::Dice::Loaded' );
 
   $ui->user_input('26');
   is_deeply( [$loaded->roll_two], [2, 6], 'Loaded dice respond to user input');

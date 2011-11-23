@@ -1,16 +1,16 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Board {
+class Games::Opoly::Board {
 
-  use Opoly::Board::Group;
-  use Opoly::Board::Tile;
+  use Games::Opoly::Board::Group;
+  use Games::Opoly::Board::Tile;
 
-  has 'groups' => (isa => 'ArrayRef[Opoly::Board::Group]', is => 'ro', required => 1);
+  has 'groups' => (isa => 'ArrayRef[Games::Opoly::Board::Group]', is => 'ro', required => 1);
   has 'tiles' => (isa => 'ArrayRef', is => 'ro', required => 1);
   has 'num_tiles' => (isa => 'Num', is => 'ro', lazy => 1, builder => '_num_tiles');
-  has 'start' => (isa => 'Opoly::Board::Tile', is => 'ro', required => 1);
-  has 'jail' => (isa => 'Opoly::Board::Tile', is => 'ro', required => 1);
+  has 'start' => (isa => 'Games::Opoly::Board::Tile', is => 'ro', required => 1);
+  has 'jail' => (isa => 'Games::Opoly::Board::Tile', is => 'ro', required => 1);
 
 
   method _num_tiles () {
@@ -37,7 +37,7 @@ class Opoly::Board {
     die "Board incomplete! Missing tiles " . join(', ', @missing_tiles) if @missing_tiles;
 
     # Populate Arrest Tiles with related Jail tiles
-    map { $_->jail( $self->jail ) unless $_->jail } grep { $_->isa('Opoly::Board::Tile::Arrest') } @$tiles;
+    map { $_->jail( $self->jail ) unless $_->jail } grep { $_->isa('Games::Opoly::Board::Tile::Arrest') } @$tiles;
 
   }
 

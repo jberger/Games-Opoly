@@ -1,25 +1,25 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Board::Group {
+class Games::Opoly::Board::Group {
 
-  use Opoly::Board::Tile;
+  use Games::Opoly::Board::Tile;
 
   has 'name' => ( isa => 'Str', is => 'ro', required => 1 );
-  has 'tiles' => ( isa => 'ArrayRef[Opoly::Board::Tile]', is => 'rw', default => sub{ [] });
+  has 'tiles' => ( isa => 'ArrayRef[Games::Opoly::Board::Tile]', is => 'rw', default => sub{ [] });
 
-  method add_tile (Opoly::Board::Tile $tile) {
+  method add_tile (Games::Opoly::Board::Tile $tile) {
     push @{ $self->tiles }, $tile;
   }
 
 }
 
-class Opoly::Board::Group::Ownable
-  extends Opoly::Board::Group {
+class Games::Opoly::Board::Group::Ownable
+  extends Games::Opoly::Board::Group {
 
   use List::MoreUtils qw/all uniq any/;
 
-  has '+tiles' => (isa => 'ArrayRef[Opoly::Board::Tile::Ownable]');
+  has '+tiles' => (isa => 'ArrayRef[Games::Opoly::Board::Tile::Ownable]');
 
   method monopoly () {
     my @tiles = @{ $self->tiles };
@@ -37,7 +37,7 @@ class Opoly::Board::Group::Ownable
     return $owners[0];
   }
 
-  method number_owned_by ( Opoly::Player $player ) {
+  method number_owned_by ( Games::Opoly::Player $player ) {
     my $num = grep { defined $_ and $_ == $player } map { $_->owner } @{ $self->tiles };
 
     return $num;
@@ -45,14 +45,14 @@ class Opoly::Board::Group::Ownable
 
 }
 
-class Opoly::Board::Group::Property 
-  extends Opoly::Board::Group::Ownable {
+class Games::Opoly::Board::Group::Property 
+  extends Games::Opoly::Board::Group::Ownable {
 
   use Carp;
   use List::Util 'sum';
 
   has 'houses_cost' => ( isa => 'Num', is => 'ro', required => 1 );
-  has '+tiles' => ( isa => 'ArrayRef[Opoly::Board::Tile::Property]');
+  has '+tiles' => ( isa => 'ArrayRef[Games::Opoly::Board::Tile::Property]');
 
   method houses_available () {
     return sum map { 5 - $_->houses } @{ $self->tiles };

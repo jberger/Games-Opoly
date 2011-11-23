@@ -1,19 +1,19 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Player {
+class Games::Opoly::Player {
 
-  use Opoly::Dice;
-  use Opoly::Board;
-  use Opoly::Board::Tile;
+  use Games::Opoly::Dice;
+  use Games::Opoly::Board;
+  use Games::Opoly::Board::Tile;
 
   has 'name' => (isa => 'Str', is => 'ro', required => 1);
-  has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
+  has 'ui' => (isa => 'Games::Opoly::UI', is => 'ro', required => 1);
 
-  has 'location' => (isa => 'Opoly::Board::Tile', is => 'rw', clearer => 'leave');
+  has 'location' => (isa => 'Games::Opoly::Board::Tile', is => 'rw', clearer => 'leave');
   has 'money' => (isa => 'Num', is => 'rw', default => 1500);
-  has 'properties' => (isa => 'ArrayRef[Opoly::Board::Tile]', is => 'rw', default => sub { [] } );
-  has 'monopolies' => (isa => 'ArrayRef[Opoly::Board::Group::Ownable]', is => 'rw', default => sub { [] } );
+  has 'properties' => (isa => 'ArrayRef[Games::Opoly::Board::Tile]', is => 'rw', default => sub { [] } );
+  has 'monopolies' => (isa => 'ArrayRef[Games::Opoly::Board::Group::Ownable]', is => 'rw', default => sub { [] } );
   has 'num_roll' => (isa => 'Num', is => 'rw', default => 0);
   has 'actions' => (isa => 'HashRef', is => 'rw', default => sub{ {} });
   has 'in_jail' => (isa => 'Num', is => 'rw', default => 0);
@@ -37,13 +37,13 @@ class Opoly::Player {
         ) .
         "]" } 
       sort { $a->address <=> $b->address }
-      grep { $_->isa('Opoly::Board::Tile::Property') }
+      grep { $_->isa('Games::Opoly::Board::Tile::Property') }
       @{$self->properties}
     ) . "\n";
     $message .= "-- Other Properties: \t" . join( "\n\t\t\t",
       map { $_->name }
       sort { $a->address <=> $b->address }
-      grep { ! $_->isa('Opoly::Board::Tile::Property') }
+      grep { ! $_->isa('Games::Opoly::Board::Tile::Property') }
       @{$self->properties}
     ) . "\n";
 
@@ -70,7 +70,7 @@ class Opoly::Player {
     $self->money($self->money() + $amount);
   }
 
-  method must_pay (Num $amount, Opoly::Player $payee?) {
+  method must_pay (Num $amount, Games::Opoly::Player $payee?) {
     return 1 if (defined $payee and $self == $payee);
 
     my @args = ($amount);
@@ -108,7 +108,7 @@ class Opoly::Player {
     $self->active(0); # lose game
   }
 
-  method pay (Num $amount, Opoly::Player $payee?) {
+  method pay (Num $amount, Games::Opoly::Player $payee?) {
     return 1 if (defined $payee and $self == $payee);
 
     if ($self->money > $amount) {
@@ -130,7 +130,7 @@ class Opoly::Player {
     }
   }
 
-  method arrest ( Opoly::Board::Tile $jail ) {
+  method arrest ( Games::Opoly::Board::Tile $jail ) {
     $jail->arrive($self);
     $self->in_jail(1);
     $self->num_roll(0);

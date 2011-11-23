@@ -3,23 +3,23 @@ use warnings;
 
 use Test::More;
 
-use Opoly::UI::Test;
-use Opoly::Player;
-use Opoly::Board::Group;
+use Games::Opoly::UI::Test;
+use Games::Opoly::Player;
+use Games::Opoly::Board::Group;
 
-use_ok( 'Opoly::Board::Tile' );
+use_ok( 'Games::Opoly::Board::Tile' );
 
-my $ui = Opoly::UI::Test->new();
-my $player = Opoly::Player->new( name => 'John Doe', ui => $ui );
+my $ui = Games::Opoly::UI::Test->new();
+my $player = Games::Opoly::Player->new( name => 'John Doe', ui => $ui );
 my $money = $player->money;
 
-my $group = Opoly::Board::Group::Ownable->new( name => 'Test Group' );
+my $group = Games::Opoly::Board::Group::Ownable->new( name => 'Test Group' );
 my $price = 100;
-my $tile = Opoly::Board::Tile::Ownable->new( price => $price, name => 'Test Tile', group => $group, address => 1 );
-my $action_tile = Opoly::Board::Tile::Ownable->new( price => $price, name => 'Test Tile', group => $group, address => 2 );
+my $tile = Games::Opoly::Board::Tile::Ownable->new( price => $price, name => 'Test Tile', group => $group, address => 1 );
+my $action_tile = Games::Opoly::Board::Tile::Ownable->new( price => $price, name => 'Test Tile', group => $group, address => 2 );
 
-isa_ok( $tile, 'Opoly::Board::Tile' );
-isa_ok( $tile, 'Opoly::Board::Tile::Ownable' );
+isa_ok( $tile, 'Games::Opoly::Board::Tile' );
+isa_ok( $tile, 'Games::Opoly::Board::Tile::Ownable' );
 is( $group->tiles->[0], $tile, 'The tile object exists in the groups\'s tiles arrayref' );
 ok( ! $group->monopoly, 'Group is not a monopoly' );
 

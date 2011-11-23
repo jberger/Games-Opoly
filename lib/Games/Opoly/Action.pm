@@ -1,7 +1,7 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Action {
+class Games::Opoly::Action {
 
   use Carp;
 
@@ -10,7 +10,7 @@ class Opoly::Action {
   has 'args' => ( isa => 'ArrayRef', is => 'rw', default => sub { [] } );
   has 'available' => ( isa => 'Bool', is => 'rw', default => 1 );
 
-  method action (Opoly $game) {
+  method action (Games::Opoly $game) {
     unless ($self->available) {
       carp "The specified action is marked as unavailable\n";
       return undef;

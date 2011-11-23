@@ -1,11 +1,11 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Deck {
+class Games::Opoly::Deck {
   use List::Util qw/shuffle/;
   use Carp;
 
-  has 'cards' => ( isa => 'ArrayRef[Opoly::Deck::Card]', is => 'rw', required => 1 );
+  has 'cards' => ( isa => 'ArrayRef[Games::Opoly::Deck::Card]', is => 'rw', required => 1 );
 
   method _reuse () {
     foreach ( @{ $self->cards } ) {

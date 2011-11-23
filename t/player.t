@@ -2,16 +2,16 @@ use strict;
 use warnings;
 
 use Test::More;
-use Opoly::UI::Test;
+use Games::Opoly::UI::Test;
 
 ## N.B. some of the player object testing happens in t/tile.t
 
-my $ui = Opoly::UI::Test->new;
+my $ui = Games::Opoly::UI::Test->new;
 
-use_ok('Opoly::Player');
+use_ok('Games::Opoly::Player');
 
-my $player = Opoly::Player->new(name => 'John Doe', ui => $ui);
-isa_ok( $player, 'Opoly::Player');
+my $player = Games::Opoly::Player->new(name => 'John Doe', ui => $ui);
+isa_ok( $player, 'Games::Opoly::Player');
 
 
 my $money = $player->money;

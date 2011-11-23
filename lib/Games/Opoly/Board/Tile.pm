@@ -1,19 +1,19 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Board::Tile {
+class Games::Opoly::Board::Tile {
 
-  use Opoly::Board::Group;
-  use Opoly::Player;
+  use Games::Opoly::Board::Group;
+  use Games::Opoly::Player;
 
   has 'name' => (isa => 'Str', is => 'ro', required => 1);
-  has 'group' => (isa => 'Opoly::Board::Group', is => 'ro', required => 1);
+  has 'group' => (isa => 'Games::Opoly::Board::Group', is => 'ro', required => 1);
   has 'address' => (isa => 'Num', is => 'ro', required => 1);
 
-  has 'occupants' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
+  has 'occupants' => (isa => 'ArrayRef[Games::Opoly::Player]', is => 'rw', default => sub{ [] });
 
   
-  method arrive (Opoly::Player $player) {
+  method arrive (Games::Opoly::Player $player) {
   # called on arrival ( usually after roll() )
 
     # remove player from old location
@@ -37,7 +37,7 @@ class Opoly::Board::Tile {
     }
   }
 
-  method leave (Opoly::Player $player) {
+  method leave (Games::Opoly::Player $player) {
     $player->leave;
     $self->occupants([ 
       grep { !( $_ == $player ) } @{ $self->occupants }
@@ -51,20 +51,20 @@ class Opoly::Board::Tile {
 
 }
 
-class Opoly::Board::Tile::Ownable 
-  extends Opoly::Board::Tile {
+class Games::Opoly::Board::Tile::Ownable 
+  extends Games::Opoly::Board::Tile {
 
   has 'price' => (isa => 'Num', is => 'ro', required => 1);
-  has 'owner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_owner', clearer => 'remove_owner');
+  has 'owner' => (isa => 'Games::Opoly::Player', is => 'rw', predicate => 'has_owner', clearer => 'remove_owner');
   has 'mortgaged' => (isa => 'Bool', is => 'rw', default => 0);
 
-  has '+group' => (isa => 'Opoly::Board::Group::Ownable');
+  has '+group' => (isa => 'Games::Opoly::Board::Group::Ownable');
 
   method get_rent () {
     return 0; #override per subclass
   }
 
-  augment arrive (Opoly::Player $player) {
+  augment arrive (Games::Opoly::Player $player) {
     my $action;
     
     if (! $self->has_owner) {
@@ -78,12 +78,12 @@ class Opoly::Board::Tile::Ownable
     return $action if $action;
   }
 
-  after leave (Opoly::Player $player) {
+  after leave (Games::Opoly::Player $player) {
     #remove the buy action from the player's menu
     $player->remove_action("Buy");
   }
 
-  method buy (Opoly::Player $player) {
+  method buy (Games::Opoly::Player $player) {
 
     #if the player can pay
     if ( $player->pay( $self->price ) ) {
@@ -96,7 +96,7 @@ class Opoly::Board::Tile::Ownable
 
   }
 
-  method take_possession (Opoly::Player $player) {
+  method take_possession (Games::Opoly::Player $player) {
     $self->owner($player);
     push @{ $player->properties }, $self;
   }
@@ -125,14 +125,14 @@ class Opoly::Board::Tile::Ownable
 
 }
 
-class Opoly::Board::Tile::Property 
-  extends Opoly::Board::Tile::Ownable {
+class Games::Opoly::Board::Tile::Property 
+  extends Games::Opoly::Board::Tile::Ownable {
 
   has 'rent' => (isa => 'ArrayRef[Num]', is => 'ro', required => 1);
 
   has 'houses' => (isa => 'Num', is => 'rw', default => 0);
 
-  has '+group' => (isa => 'Opoly::Board::Group::Property');
+  has '+group' => (isa => 'Games::Opoly::Board::Group::Property');
 
   override get_rent () {
     my $rent = $self->rent->[$self->houses];
@@ -142,7 +142,7 @@ class Opoly::Board::Tile::Property
     return $rent;
   }
 
-  augment arrive (Opoly::Player $player) {
+  augment arrive (Games::Opoly::Player $player) {
     my $rent = $self->get_rent;
 
     $player->must_pay($rent, $self->owner);
@@ -172,14 +172,14 @@ class Opoly::Board::Tile::Property
     $self->_check_monopoly;
   }
 
-  after take_possession (Opoly::Player $player) {
+  after take_possession (Games::Opoly::Player $player) {
     $self->_check_monopoly;
   }
   
 }
 
-class Opoly::Board::Tile::Railroad
-  extends Opoly::Board::Tile::Ownable {
+class Games::Opoly::Board::Tile::Railroad
+  extends Games::Opoly::Board::Tile::Ownable {
 
   override get_rent () {
     my @rents = (25, 50, 100, 200);
@@ -189,17 +189,17 @@ class Opoly::Board::Tile::Railroad
     return $rent;
   }
 
-  augment arrive (Opoly::Player $player) {
+  augment arrive (Games::Opoly::Player $player) {
     my $rent = $self->get_rent;
     $player->must_pay($rent, $self->owner);
   }
 
 }
 
-class Opoly::Board::Tile::Utility
-  extends Opoly::Board::Tile::Ownable {
+class Games::Opoly::Board::Tile::Utility
+  extends Games::Opoly::Board::Tile::Ownable {
 
-  has dice => (isa => 'Opoly::Dice', is => 'rw');
+  has dice => (isa => 'Games::Opoly::Dice', is => 'rw');
 
   override get_rent () {
     my @multipliers = (4, 10);
@@ -217,7 +217,7 @@ class Opoly::Board::Tile::Utility
     }
   }
 
-  augment arrive ( Opoly::Player $player ) {
+  augment arrive ( Games::Opoly::Player $player ) {
     my ($rent, $roll, $multiplier) = $self->get_rent;
 
     $player->ui->log(
@@ -229,13 +229,13 @@ class Opoly::Board::Tile::Utility
 
 }
 
-class Opoly::Board::Tile::Card
-  extends Opoly::Board::Tile {
+class Games::Opoly::Board::Tile::Card
+  extends Games::Opoly::Board::Tile {
   
-  has 'deck' => ( isa => 'Opoly::Deck', is => 'ro', required => 1);
-  has 'game' => ( isa => 'Opoly', is => 'rw' ); #TODO make required once
+  has 'deck' => ( isa => 'Games::Opoly::Deck', is => 'ro', required => 1);
+  has 'game' => ( isa => 'Games::Opoly', is => 'rw' ); #TODO make required once
 
-  augment arrive (Opoly::Player $player) {
+  augment arrive (Games::Opoly::Player $player) {
     my $card = $self->deck->draw;
     my @args = $player;
     my $others = $card->others;
@@ -256,25 +256,25 @@ class Opoly::Board::Tile::Card
 
 }
 
-class Opoly::Board::Tile::Arrest
-  extends Opoly::Board::Tile {
+class Games::Opoly::Board::Tile::Arrest
+  extends Games::Opoly::Board::Tile {
 
-  has 'jail' => (isa => 'Opoly::Board::Tile', is => 'rw');
+  has 'jail' => (isa => 'Games::Opoly::Board::Tile', is => 'rw');
 
-  augment arrive ( Opoly::Player $player ) {
+  augment arrive ( Games::Opoly::Player $player ) {
     $player->arrest($self->jail);
   }
 
 }
 
-class Opoly::Board::Tile::Tax 
-  extends Opoly::Board::Tile {
+class Games::Opoly::Board::Tile::Tax 
+  extends Games::Opoly::Board::Tile {
 
   has 'amount' => (isa => 'Num', is => 'ro', required => 1);
 
   has 'percent' => (isa => 'Num', is => 'ro', default => 0);
 
-  augment arrive (Opoly::Player $player) {
+  augment arrive (Games::Opoly::Player $player) {
 
     my $amount = $self->amount;
     if ($self->percent) {

@@ -1,41 +1,45 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::UI::Test 
-  extends Opoly::UI {
-
-  has 'message' => (isa => 'Str', is => 'rw', default => '');
-  has 'return'  => (isa => 'Str', is => 'rw', default => '');
-  has 'user_input' => (isa => 'Str', is => 'rw', default => '');
-
-  method clear () {
-    $self->message('');
-    $self->return('');
-    $self->user_input('');
-    return 1;
-  }
+class Games::Opoly::UI::CLI 
+  extends Games::Opoly::UI {
 
   before log (Str $message) {
     $self->inform($message);
   }
 
   override inform (Str $message = '') {
-    $self->message( $message );
+    print $message;
+  }
+
+  method turn_menu () {
+    
   }
 
   override choice ( ArrayRef[Str] $choices, Str $message? ) {
-    $self->message( $message ) if $message;
-    my $user_input = $self->user_input;
-    if ( 1 == grep { $_ eq $user_input } @$choices ) {
-      return $user_input;
-    } else {
-      die "$user_input is not a valid choice";
+    print $message if $message;
+
+    my @possible_responses;
+    while (1) {
+      print "-- Select: " . join(', ', @$choices) . " :> ";
+
+      my $user_response = <>;
+      ## prevent rare use of undef warnings
+      $user_response //= ''; 		#/# fix highlighter
+
+      chomp $user_response;
+      @possible_responses = grep { /^$user_response/i } @$choices;
+      last if @possible_responses == 1;
+      print "---- Could not understand response!\n";
     }
+
+    return $possible_responses[0];
   }
 
   override input (Str $question) {
-    $self->message( $question );
-    return $self->user_input();
+    print $question . " :> ";
+    chomp( my $response = <> );
+    return $response;
   }
 
   override play_game () {

@@ -1,7 +1,7 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Deck::Card {
+class Games::Opoly::Deck::Card {
 
   has 'text' => ( isa => 'Str', is => 'ro', required => 1 );
 
@@ -10,7 +10,7 @@ class Opoly::Deck::Card {
   has 'others' => ( isa => 'CodeRef|Str', is => 'ro', required => 1 );
 
   # coderef which is called as $code->($player, @others) from above
-  has 'action' => ( isa => 'Opoly::Action', is => 'ro', required => 1 );
+  has 'action' => ( isa => 'Games::Opoly::Action', is => 'ro', required => 1 );
 
   has 'seen' => ( isa => 'Bool', is => 'rw', default => 0 );
 }

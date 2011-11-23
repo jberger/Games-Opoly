@@ -3,10 +3,10 @@ use warnings;
 
 use Test::More;
 
-use_ok('Opoly::UI::Test');
+use_ok('Games::Opoly::UI::Test');
 
-my $ui = Opoly::UI::Test->new();
-isa_ok( $ui, 'Opoly::UI');
+my $ui = Games::Opoly::UI::Test->new();
+isa_ok( $ui, 'Games::Opoly::UI');
 
 {
   # test inform

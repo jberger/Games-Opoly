@@ -7,14 +7,14 @@ use lib 'lib';
 
 use 5.10.0;
 
-use Opoly;
-use Opoly::Player;
-use Opoly::Board;
-use Opoly::Board::Group;
-use Opoly::Board::Tile;
-use Opoly::UI::CLI;
+use Games::Opoly;
+use Games::Opoly::Player;
+use Games::Opoly::Board;
+use Games::Opoly::Board::Group;
+use Games::Opoly::Board::Tile;
+use Games::Opoly::UI::CLI;
 
-use Opoly::Collections::Boards::Standard;
+use Games::Opoly::Collections::Boards::Standard;
 
 use Getopt::Long;
 my $loaded_dice = 0;
@@ -24,22 +24,22 @@ GetOptions(
 
 my $board_file = 'standard_board.conf';
 
-my $board = Opoly::Collections::Boards::Standard->board();
+my $board = Games::Opoly::Collections::Boards::Standard->board();
 
-my $game = Opoly->new( 
+my $game = Games::Opoly->new( 
   board => $board, 
-  ui => Opoly::UI::CLI->new(),
+  ui => Games::Opoly::UI::CLI->new(),
   "loaded_dice" => $loaded_dice,
 );
 
 $game->add_player(
-  Opoly::Player->new(
+  Games::Opoly::Player->new(
     name => 'Joel', 
     ui => $game->ui,
   )
 );
 $game->add_player(
-  Opoly::Player->new(
+  Games::Opoly::Player->new(
     name => 'Carolyn',
     ui => $game->ui,
   )

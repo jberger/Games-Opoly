@@ -1,7 +1,7 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::Dice {
+class Games::Opoly::Dice {
 
   method roll_two () {
     return map { $self->roll_one } (0 .. 1);
@@ -13,12 +13,12 @@ class Opoly::Dice {
 
 }
 
-class Opoly::Dice::Loaded 
-  extends Opoly::Dice {
+class Games::Opoly::Dice::Loaded 
+  extends Games::Opoly::Dice {
 
   use List::MoreUtils qw/all/;
 
-  has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1); 
+  has 'ui' => (isa => 'Games::Opoly::UI', is => 'ro', required => 1); 
 
   override roll_two () {
     my $response = $self->ui->input("-- Input two numbers");

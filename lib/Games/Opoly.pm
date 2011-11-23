@@ -1,30 +1,30 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly {
+class Games::Opoly {
 
-  use Opoly::Player;
-  use Opoly::Dice;
-  #use Opoly::Board;
+  use Games::Opoly::Player;
+  use Games::Opoly::Dice;
+  #use Games::Opoly::Board;
 
   use List::Util qw/first sum/;
   use Scalar::Util qw/looks_like_number/;
 
-  has 'board' => (isa => 'Opoly::Board', is => 'ro', required => 1);
-  has 'ui' => (isa => 'Opoly::UI', is => 'ro', required => 1);
+  has 'board' => (isa => 'Games::Opoly::Board', is => 'ro', required => 1);
+  has 'ui' => (isa => 'Games::Opoly::UI', is => 'ro', required => 1);
 
-  has 'players' => (isa => 'ArrayRef[Opoly::Player]', is => 'rw', default => sub{ [] });
-  has 'current_player' => (isa => 'Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
-  has 'winner' => (isa => 'Opoly::Player', is => 'rw', predicate => 'has_winner');
+  has 'players' => (isa => 'ArrayRef[Games::Opoly::Player]', is => 'rw', default => sub{ [] });
+  has 'current_player' => (isa => 'Games::Opoly::Player', is => 'rw', lazy => 1, builder => '_first_player');
+  has 'winner' => (isa => 'Games::Opoly::Player', is => 'rw', predicate => 'has_winner');
 
-  has 'dice' => (isa => 'Opoly::Dice', is => 'ro', lazy => 1, builder => '_make_dice');
+  has 'dice' => (isa => 'Games::Opoly::Dice', is => 'ro', lazy => 1, builder => '_make_dice');
   has 'loaded_dice' => (isa => 'Bool', is => 'ro', default => 0);
   method _make_dice () {
-    my $dice = $self->loaded_dice() ? Opoly::Dice::Loaded->new( ui => $self->ui ) : Opoly::Dice->new();
+    my $dice = $self->loaded_dice() ? Games::Opoly::Dice::Loaded->new( ui => $self->ui ) : Games::Opoly::Dice->new();
 
     # Populate Utility tiles with references to dice object
     map { $_->dice( $dice ) } 
-      grep { $_->isa('Opoly::Board::Tile::Utility') } 
+      grep { $_->isa('Games::Opoly::Board::Tile::Utility') } 
       @{ $self->board->tiles };
 
     return $dice;
@@ -35,7 +35,7 @@ class Opoly {
 
     # pass game object to O::B::T::Card objects
     map { $_->game($self) }
-      grep { $_->isa('Opoly::Board::Tile::Card') }
+      grep { $_->isa('Games::Opoly::Board::Tile::Card') }
       @{ $self->board->tiles };
   }
 
@@ -44,7 +44,7 @@ class Opoly {
     $self->ui->play_game();
   }
 
-  method add_player ( Opoly::Player $player ) {
+  method add_player ( Games::Opoly::Player $player ) {
     $player->location($self->board->start);
     push @{ $self->players }, $player;
   }
@@ -145,7 +145,7 @@ class Opoly {
     $self->move($player, $roll_total);
   }
 
-  method move (Opoly::Player $player, Num|Opoly::Board::Tile $where) {
+  method move (Games::Opoly::Player $player, Num|Games::Opoly::Board::Tile $where) {
     ## Takes a player to move and either a tile object to move to
      # OR a number which represents the number of spaces to move
      # NOT the address to move to (think go 3 spaces not go to address 3) 
@@ -234,7 +234,7 @@ class Opoly {
     $self->ui->inform("Next player: " . $self->current_player->name . "\n");
   }
 
-  method status ( Opoly::Player $input_player? ) {
+  method status ( Games::Opoly::Player $input_player? ) {
     my @players = defined $input_player ? ($input_player) : @{ $self->players };
     $self->ui->inform( "------  Player Status  ------\n");
 

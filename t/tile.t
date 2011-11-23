@@ -3,19 +3,19 @@ use warnings;
 
 use Test::More;
 
-use Opoly::UI::Test;
-use Opoly::Player;
-use Opoly::Board::Group;
+use Games::Opoly::UI::Test;
+use Games::Opoly::Player;
+use Games::Opoly::Board::Group;
 
-use_ok( 'Opoly::Board::Tile' );
+use_ok( 'Games::Opoly::Board::Tile' );
 
-my $ui = Opoly::UI::Test->new();
-my $player = Opoly::Player->new( name => 'John Doe', ui => $ui );
+my $ui = Games::Opoly::UI::Test->new();
+my $player = Games::Opoly::Player->new( name => 'John Doe', ui => $ui );
 
-my $group = Opoly::Board::Group->new( name => 'Test Group' );
-my $tile = Opoly::Board::Tile->new( name => 'Test Tile', group => $group, address => 1 );
+my $group = Games::Opoly::Board::Group->new( name => 'Test Group' );
+my $tile = Games::Opoly::Board::Tile->new( name => 'Test Tile', group => $group, address => 1 );
 
-isa_ok( $tile, 'Opoly::Board::Tile' );
+isa_ok( $tile, 'Games::Opoly::Board::Tile' );
 is( $group->tiles->[0], $tile, 'The tile object exists in the groups\'s tiles arrayref' );
 
 $tile->arrive( $player );

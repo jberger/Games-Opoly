@@ -1,11 +1,11 @@
 use MooseX::Declare;
 use Method::Signatures::Modifiers;
 
-class Opoly::UI {
+class Games::Opoly::UI {
 
   #has 'message' => (isa => 'Str', is => 'rw', default => '');
   has 'game_log' => (isa => 'ArrayRef[Str]', is => 'rw', default => sub{ [] });
-  has 'game' => (isa => 'Opoly', is => 'rw', lazy => 1, default => '');
+  has 'game' => (isa => 'Games::Opoly', is => 'rw', lazy => 1, default => '');
 
   method log (Str $message) {
     push @{ $self->game_log }, $message;
