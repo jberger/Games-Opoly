@@ -5,7 +5,10 @@ class Games::Opoly::Deck {
   use List::Util qw/shuffle/;
   use Carp;
 
-  has 'cards' => ( isa => 'ArrayRef[Games::Opoly::Deck::Card]', is => 'rw', required => 1 );
+  use Games::Opoly::Deck::Card;
+  use Games::Opoly::Action;
+
+  has 'cards' => ( isa => 'ArrayRef[Games::Opoly::Deck::Card]', is => 'rw', default => sub{ [] } );
 
   method _reuse () {
     foreach ( @{ $self->cards } ) {
@@ -31,6 +34,19 @@ class Games::Opoly::Deck {
     $card->seen(1);
 
     return $card;
+  }
+
+  method add_card (Str $text, CodeRef $code, CodeRef|Str $others = 'none') {
+    my $card = Games::Opoly::Deck::Card->new(
+      text => $text,
+      others => $others,
+      action => Games::Opoly::Action->new(
+        description => $text, 
+        code => $code
+      ),
+    );
+
+    push @{ $self->cards }, $card;
   }
 }
 
