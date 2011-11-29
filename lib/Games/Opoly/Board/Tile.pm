@@ -72,10 +72,18 @@ class Games::Opoly::Board::Tile::Ownable
       $player->add_action({ 'Buy ($' . $self->price . ")" => sub{ $self->buy($player) } });
     } else {
       #The tiles are different in their action if owned, therefore call class specific action here
-      $action = inner($player) unless $self->mortgaged;
+      unless ($self->mortgaged) {
+        $self->pay_rent($player);
+        $action = inner($player);
+      }
     }
 
     return $action if $action;
+  }
+
+  method pay_rent (Games::Opoly::Player $player) {
+    my $rent = $self->get_rent;
+    $player->must_pay($rent, $self->owner);
   }
 
   after leave (Games::Opoly::Player $player) {
@@ -142,14 +150,6 @@ class Games::Opoly::Board::Tile::Property
     return $rent;
   }
 
-  augment arrive (Games::Opoly::Player $player) {
-    my $rent = $self->get_rent;
-
-    $player->must_pay($rent, $self->owner);
-
-    return 0;
-  }
-
   augment mortgage () {
     my $collect = 0;
     foreach my $tile ( @{ $self->group->tiles } ) {
@@ -181,17 +181,13 @@ class Games::Opoly::Board::Tile::Property
 class Games::Opoly::Board::Tile::Railroad
   extends Games::Opoly::Board::Tile::Ownable {
 
-  override get_rent () {
-    my @rents = (25, 50, 100, 200);
-    my $rent = $rents[
-      $self->group->number_owned_by($self->owner) - 1
-    ];
-    return $rent;
-  }
+  has 'rent'       => ( isa => 'Num', is => 'ro', default => 25 );
+  has 'multiplier' => ( isa => 'Int', is => 'ro', default => 2  );
 
-  augment arrive (Games::Opoly::Player $player) {
-    my $rent = $self->get_rent;
-    $player->must_pay($rent, $self->owner);
+  override get_rent () {
+    my $rent = $self->rent;
+    $rent *= $self->multiplier ** ( $self->group->number_owned_by($self->owner) - 1 );
+    return $rent;
   }
 
 }
@@ -217,7 +213,7 @@ class Games::Opoly::Board::Tile::Utility
     }
   }
 
-  augment arrive ( Games::Opoly::Player $player ) {
+  override pay_rent ( Games::Opoly::Player $player ) {
     my ($rent, $roll, $multiplier) = $self->get_rent;
 
     $player->ui->log(
